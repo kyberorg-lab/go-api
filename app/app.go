@@ -11,7 +11,7 @@ const (
 	DefaultDBFile = "go-rest.db"
 )
 
-//other
+//Database-related
 const (
 	DBDialect = "sqlite3"
 )

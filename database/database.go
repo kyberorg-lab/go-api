@@ -25,7 +25,7 @@ func InitDatabase() {
 	if err != nil {
 		panic("Failed to connect to database")
 	}
-	fmt.Println("Database successfully connected")
+	fmt.Println("Database successfully connected. Database location:", dbFile)
 }
 
 func CloseDatabase() {
