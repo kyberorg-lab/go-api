@@ -20,6 +20,7 @@ FROM apline:latest
 RUN mkdir -p /api
 WORKDIR /api
 COPY --from=builder /api/${APP_NAME} .
+ADD assets /api/assets
 
 EXPOSE 8080
 

@@ -18,9 +18,17 @@ func init() {
 }
 
 func main() {
+	handleStaticResources()
+
 	router.POST("/login", Login)
+
 	defer database.CloseDatabase()
 	log.Fatal(router.Run(":8080"))
+}
+
+func handleStaticResources() {
+	router.Static("/static", "./assets")
+	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 }
 
 func Login(context *gin.Context) {
