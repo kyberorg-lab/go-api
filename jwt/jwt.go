@@ -2,12 +2,9 @@ package jwt
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"go-rest/app"
 	"os"
 	"time"
-)
-
-const (
-	accessSecretEnv = "ACCESS_SECRET"
 )
 
 func CreateToken(userId uint64) (string, error) {
@@ -18,7 +15,7 @@ func CreateToken(userId uint64) (string, error) {
 	atClaims["user_id"] = userId
 	atClaims["exp"] = time.Now().Add(15 * time.Minute).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS512, atClaims)
-	token, err := at.SignedString([]byte(os.Getenv(accessSecretEnv)))
+	token, err := at.SignedString([]byte(os.Getenv(app.EnvJwtSecret)))
 	if err != nil {
 		return "", err
 	}
