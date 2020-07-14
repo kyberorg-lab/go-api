@@ -2,11 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-rest/database"
-	"go-rest/jwt"
-	"go-rest/user"
+	"go-rest/api"
+	"go-rest/app/database"
 	"log"
-	"net/http"
 )
 
 var (
@@ -20,7 +18,11 @@ func init() {
 func main() {
 	handleStaticResources()
 
-	router.POST("/login", Login)
+	router.POST("/auth", api.AuthEndpoint)
+	userApi := router.Group("/users")
+	{
+		userApi.POST("", api.CreateUserEndpoint)
+	}
 
 	defer database.CloseDatabase()
 	log.Fatal(router.Run(":8080"))
@@ -29,25 +31,4 @@ func main() {
 func handleStaticResources() {
 	router.Static("/static", "./assets")
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
-}
-
-func Login(context *gin.Context) {
-	var u user.User
-	var sampleUser user.User = user.GetSampleUser()
-
-	if err := context.ShouldBindJSON(&u); err != nil {
-		context.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
-		return
-	}
-	//compare the user from request, with defined one
-	if sampleUser.Username != u.Username || sampleUser.Password != u.Password {
-		context.JSON(http.StatusUnauthorized, "Please provide valid login details")
-		return
-	}
-	token, err := jwt.CreateToken(u.ID)
-	if err != nil {
-		context.JSON(http.StatusUnprocessableEntity, err.Error())
-		return
-	}
-	context.JSON(http.StatusOK, token)
 }
