@@ -1,5 +1,4 @@
 ARG GO_VERSION=1.14
-ARG APP_NAME=go-rest
 
 FROM golang:${GO_VERSION}-alpine AS builder
 
@@ -13,15 +12,15 @@ COPY go.sum .
 RUN go mod download
 
 COPY . .
-RUN go build -o /${APP_NAME} ./...
+RUN go build -o application main.go
 
-FROM apline:latest
+FROM alpine:3.12
 
 RUN mkdir -p /api
 WORKDIR /api
-COPY --from=builder /api/${APP_NAME} .
+COPY --from=builder /api/application .
 ADD assets /api/assets
 
 EXPOSE 8080
 
-ENTRYPOINT ["./${APP_NAME}"]
+ENTRYPOINT ["./application"]
