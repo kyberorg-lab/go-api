@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-rest/database"
 	"go-rest/jwt"
 	"go-rest/user"
 	"log"
@@ -12,8 +13,13 @@ var (
 	router = gin.Default()
 )
 
+func init() {
+	database.InitDatabase()
+}
+
 func main() {
 	router.POST("/login", Login)
+	defer database.CloseDatabase()
 	log.Fatal(router.Run(":8080"))
 }
 
