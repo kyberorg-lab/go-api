@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	SaltLen            = 32
 	KeyLen             = 32
 	NumberOfIterations = 1048576
 	RelativeMemoryCost = 8
@@ -103,9 +102,8 @@ func DecryptString(encryptedData, sharedKey string) (string, error) {
 	return string(plainText), nil
 }
 
-func deriveKey(password []byte) ([]byte, error) {
-	staticSalt := []byte("My Static Salt") //FIXME static salt
-	key, err := scrypt.Key(password, staticSalt, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
+func deriveKey(secretKey []byte) ([]byte, error) {
+	key, err := scrypt.Key(secretKey, secretKey, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
 	if err != nil {
 		return nil, err
 	}
