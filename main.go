@@ -24,6 +24,11 @@ func main() {
 		userApi.POST("", api.CreateUserEndpoint)
 	}
 
+	scopeApi := router.Group("/scope")
+	{
+		scopeApi.POST("", api.CreateScopeEndpoint)
+	}
+
 	defer database.CloseDatabase()
 	log.Fatal(router.Run(":8080"))
 }
