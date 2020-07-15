@@ -4,7 +4,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/hex"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -17,13 +16,13 @@ const (
 )
 
 // Encrypts data (aka passwords) with key (shared secret) returns hex-encoded encrypted text
-func Encrypt(key, data []byte) ([]byte, error) {
-	key, salt, err := deriveKey(key, nil)
+func Encrypt(plainText, sharedKey []byte) ([]byte, error) {
+	sharedKey, err := deriveKey(sharedKey)
 	if err != nil {
 		return nil, err
 	}
 
-	blockCipher, err := aes.NewCipher(key)
+	blockCipher, err := aes.NewCipher(sharedKey)
 	if err != nil {
 		return nil, err
 	}
@@ -38,35 +37,33 @@ func Encrypt(key, data []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	cipherText := gcm.Seal(nonce, nonce, data, nil)
-	cipherText = append(cipherText, salt...)
+	encrypted := gcm.Seal(nil, nonce, plainText, nil)
+	encrypted = append(nonce, encrypted...)
 
-	return cipherText, nil
+	return encrypted, nil
 }
 
 // Encrypts data (aka passwords) with key (shared secret) returns strings
-func EncryptString(key, data string) (string, error) {
-	bKey := []byte(key)
-	bData := []byte(data)
+func EncryptString(plainTextData, sharedKey string) (string, error) {
+	bPlainData := []byte(plainTextData)
+	bSharedKey := []byte(sharedKey)
 
-	encryptedText, err := Encrypt(bKey, bData)
+	encryptedText, err := Encrypt(bPlainData, bSharedKey)
 	if err != nil {
 		return "", err
 	}
 
-	return hex.EncodeToString(encryptedText), nil
+	return string(encryptedText), nil
 }
 
 // Decrypts data (passwords etc) encrypted with Encrypt function using the same key (shared secret)
-func Decrypt(key, data []byte) ([]byte, error) {
-	salt, data := data[len(data)-32:], data[:len(data)-32]
-
-	key, _, err := deriveKey(key, salt)
+func Decrypt(encryptedData, sharedKey []byte) ([]byte, error) {
+	sharedKey, err := deriveKey(sharedKey)
 	if err != nil {
 		return nil, err
 	}
 
-	blockCipher, err := aes.NewCipher(key)
+	blockCipher, err := aes.NewCipher(sharedKey)
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +73,9 @@ func Decrypt(key, data []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	nonce, cipherText := data[:gcm.NonceSize()], data[gcm.NonceSize():]
+	nonce, encrypted := encryptedData[:gcm.NonceSize()], encryptedData[gcm.NonceSize():]
 
-	plainText, err := gcm.Open(nil, nonce, cipherText, nil)
+	plainText, err := gcm.Open(nil, nonce, encrypted, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -86,27 +83,22 @@ func Decrypt(key, data []byte) ([]byte, error) {
 }
 
 // Decrypts data (passwords etc) encrypted with Encrypt function using the same key (shared secret). Returns decrypted string
-func DecryptString(key, data string) (string, error) {
-	bKey := []byte(key)
-	bData := []byte(data)
+func DecryptString(encryptedData, sharedKey string) (string, error) {
+	bEncryptedData := []byte(encryptedData)
+	bSharedKey := []byte(sharedKey)
 
-	plainHexText, err := Decrypt(bKey, bData)
+	plainText, err := Decrypt(bEncryptedData, bSharedKey)
 	if err != nil {
 		return "", err
 	}
-	return hex.EncodeToString(plainHexText), nil
+	return string(plainText), nil
 }
 
-func deriveKey(password, salt []byte) ([]byte, []byte, error) {
-	if salt == nil {
-		salt = make([]byte, SaltLen)
-		if _, err := rand.Read(salt); err != nil {
-			return nil, nil, err
-		}
-	}
-	key, err := scrypt.Key(password, salt, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
+func deriveKey(password []byte) ([]byte, error) {
+	staticSalt := []byte("My Static Salt") //FIXME static salt
+	key, err := scrypt.Key(password, staticSalt, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return key, salt, nil
+	return key, nil
 }
