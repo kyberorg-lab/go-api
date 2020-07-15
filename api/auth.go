@@ -9,8 +9,8 @@ import (
 )
 
 func AuthEndpoint(context *gin.Context) {
-	var u user.User
-	var sampleUser user.User = user.GetSampleUser()
+	var u user.OldUser
+	var sampleUser user.OldUser = user.GetSampleUser()
 
 	if err := context.ShouldBindJSON(&u); err != nil {
 		context.JSON(http.StatusUnprocessableEntity, utils.ErrorJson("Invalid json provided"))
