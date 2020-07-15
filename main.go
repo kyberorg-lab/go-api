@@ -20,6 +20,12 @@ func init() {
 func main() {
 	handleStaticResources()
 
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "OK",
+		})
+	})
+
 	router.POST("/auth", api.AuthEndpoint)
 	userApi := router.Group("/users")
 	{
