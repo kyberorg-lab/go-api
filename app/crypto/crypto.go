@@ -5,7 +5,9 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"go-rest/app"
 	"golang.org/x/crypto/scrypt"
+	"os"
 )
 
 const (
@@ -103,7 +105,8 @@ func DecryptString(encryptedData, sharedKey string) (string, error) {
 }
 
 func deriveKey(secretKey []byte) ([]byte, error) {
-	key, err := scrypt.Key(secretKey, secretKey, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
+	salt := getSalt()
+	key, err := scrypt.Key(secretKey, salt, NumberOfIterations, RelativeMemoryCost, RelativeCPUCost, KeyLen)
 	if err != nil {
 		return nil, err
 	}
@@ -113,4 +116,12 @@ func deriveKey(secretKey []byte) ([]byte, error) {
 func isBase64String(s string) bool {
 	_, err := base64.StdEncoding.DecodeString(s)
 	return err == nil
+}
+
+func getSalt() []byte {
+	salt, saltEnvExists := os.LookupEnv(app.EnvEncryptSalt)
+	if saltEnvExists {
+		return []byte(app.DefaultSalt)
+	}
+	return []byte(salt)
 }
