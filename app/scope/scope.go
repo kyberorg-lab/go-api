@@ -7,21 +7,24 @@ import (
 	"go-rest/app/database/model"
 )
 
-var db = database.DBConn
-
 func CreateSuperUserScope() {
+	var result string
+
 	_, err := FindScopeByName(app.DefaultSuperUserScope)
 	if err != nil {
-		fmt.Println("Creating", app.DefaultSuperUserScope, "scope")
-		db.Create(&model.Scope{
+		database.DBConn.Create(&model.Scope{
 			Name: app.DefaultSuperUserScope,
 		})
+		result = "done"
+	} else {
+		result = "skipped (already exists)"
 	}
+	fmt.Println("Creating", app.DefaultSuperUserScope, "scope", ".....", result)
 }
 
 func FindScopeByName(name string) (model.Scope, error) {
 	var scope model.Scope
-	result := db.Find(scope, name)
+	result := database.DBConn.First(&scope, "name = ?", name)
 
 	if result.Error != nil {
 		return scope, result.Error
