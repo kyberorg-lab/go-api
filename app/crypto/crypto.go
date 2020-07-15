@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -15,7 +16,7 @@ const (
 	RelativeCPUCost    = 1
 )
 
-// Encrypts data (aka passwords) with key (shared secret) returns hex-encoded encrypted text
+// Encrypts data (aka passwords) with key (shared secret) returns encrypted text
 func Encrypt(plainText, sharedKey []byte) ([]byte, error) {
 	sharedKey, err := deriveKey(sharedKey)
 	if err != nil {
@@ -43,17 +44,18 @@ func Encrypt(plainText, sharedKey []byte) ([]byte, error) {
 	return encrypted, nil
 }
 
-// Encrypts data (aka passwords) with key (shared secret) returns strings
+// Encrypts data (aka passwords) with key (shared secret) returns base64-encoded string
 func EncryptString(plainTextData, sharedKey string) (string, error) {
 	bPlainData := []byte(plainTextData)
 	bSharedKey := []byte(sharedKey)
 
-	encryptedText, err := Encrypt(bPlainData, bSharedKey)
+	encrypted, err := Encrypt(bPlainData, bSharedKey)
 	if err != nil {
 		return "", err
 	}
 
-	return string(encryptedText), nil
+	encryptedText := base64.StdEncoding.EncodeToString(encrypted)
+	return encryptedText, nil
 }
 
 // Decrypts data (passwords etc) encrypted with Encrypt function using the same key (shared secret)
@@ -84,7 +86,14 @@ func Decrypt(encryptedData, sharedKey []byte) ([]byte, error) {
 
 // Decrypts data (passwords etc) encrypted with Encrypt function using the same key (shared secret). Returns decrypted string
 func DecryptString(encryptedData, sharedKey string) (string, error) {
-	bEncryptedData := []byte(encryptedData)
+	var bEncryptedData []byte
+
+	if isBase64String(encryptedData) {
+		bEncryptedData, _ = base64.StdEncoding.DecodeString(encryptedData)
+	} else {
+		bEncryptedData = []byte(encryptedData)
+	}
+
 	bSharedKey := []byte(sharedKey)
 
 	plainText, err := Decrypt(bEncryptedData, bSharedKey)
@@ -101,4 +110,9 @@ func deriveKey(password []byte) ([]byte, error) {
 		return nil, err
 	}
 	return key, nil
+}
+
+func isBase64String(s string) bool {
+	_, err := base64.StdEncoding.DecodeString(s)
+	return err == nil
 }
