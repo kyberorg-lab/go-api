@@ -8,7 +8,8 @@ const (
 
 //Defaults
 const (
-	DefaultDBFile = "go-rest.db"
+	DefaultDBFile         = "go-rest.db"
+	DefaultSuperUserScope = "SUPER_ADMIN"
 )
 
 //Database-related

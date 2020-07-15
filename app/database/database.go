@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"go-rest/app"
+	"go-rest/app/database/model"
 	"log"
 	"os"
 )
@@ -26,6 +27,10 @@ func InitDatabase() {
 		panic("Failed to connect to database")
 	}
 	fmt.Println("Database successfully connected. Database location:", dbFile)
+
+	//auto migrate
+	DBConn.AutoMigrate(&model.Scope{})
+	fmt.Println("Database migrations are executed")
 }
 
 func CloseDatabase() {

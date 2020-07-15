@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-rest/api"
 	"go-rest/app/database"
+	"go-rest/app/scope"
 	"log"
 )
 
@@ -13,6 +14,7 @@ var (
 
 func init() {
 	database.InitDatabase()
+	scope.CreateSuperUserScope()
 }
 
 func main() {
