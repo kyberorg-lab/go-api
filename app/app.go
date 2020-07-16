@@ -30,3 +30,7 @@ const (
 	ScopeSuperAdmin = "SUPER_ADMIN"
 	ScopeUser       = "USER"
 )
+
+type Token struct {
+	Token string `json:"token"  binding:"required"`
+}

@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-rest/app"
 	"go-rest/app/database/model"
 	"go-rest/app/jwt"
 	"go-rest/app/user"
@@ -48,5 +49,7 @@ func AuthEndpoint(context *gin.Context) {
 		context.JSON(http.StatusUnprocessableEntity, utils.ErrorJson(err.Error()))
 		return
 	}
-	context.JSON(http.StatusOK, token)
+	context.JSON(http.StatusOK, app.Token{
+		Token: token,
+	})
 }
