@@ -5,6 +5,7 @@ import (
 	"go-rest/api"
 	"go-rest/app/database"
 	"go-rest/app/scope"
+	"go-rest/app/user"
 	"log"
 )
 
@@ -15,6 +16,14 @@ var (
 func init() {
 	database.InitDatabase()
 	scope.CreateSuperUserScope()
+
+	err := user.CreateFirstUser()
+	if err != nil {
+		otherSuperAdminsExist, searchError := user.SuperAdminsInSystemExist()
+		if !otherSuperAdminsExist || searchError != nil {
+			panic("Failed to create first user and there are no other admins exist")
+		}
+	}
 }
 
 func main() {

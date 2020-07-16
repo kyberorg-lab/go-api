@@ -6,16 +6,16 @@ const (
 	EnvEncryptSalt              = "ENCRYPT_SALT"
 	EnvEncryptSecretKeyPassword = "ENCRYPT_SECRET_KEY_PASSWORD"
 	EnvDatabaseFile             = "DATABASE_FILE"
-	EnvSuperUserName            = "SUPER_USER_NAME"
-	EnvSuperUserPassword        = "SUPER_USER_PASSWORD"
+	EnvFirstUserName            = "FIRST_USER_NAME"
+	EnvFirstUserPassword        = "FIRST_USER_PASSWORD"
 )
 
 //Defaults
 const (
 	DefaultDBFile            = "go-rest.db"
-	DefaultSuperUserScope    = "SUPER_ADMIN"
-	DefaultSuperUserName     = "toor"
-	DefaultSuperUserPassword = "OpenItIsToor"
+	DefaultFirstUserScope    = ScopeSuperAdmin
+	DefaultFirstUserName     = "toor"
+	DefaultFirstUserPassword = "OpenItIsToor"
 	DefaultSalt              = "Please_Use_ENCRYPT_SALT_Env_Instead"
 	DefaultSecretKeyPassword = "Please_Use_ENCRYPT_SECRET_KEY_PASSWORD_Env_Instead"
 )
@@ -23,4 +23,9 @@ const (
 //Database-related
 const (
 	DBDialect = "sqlite3"
+)
+
+//scopes
+const (
+	ScopeSuperAdmin = "SUPER_ADMIN"
 )

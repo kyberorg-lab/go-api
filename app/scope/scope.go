@@ -10,16 +10,16 @@ import (
 func CreateSuperUserScope() {
 	var result string
 
-	_, err := FindScopeByName(app.DefaultSuperUserScope)
+	_, err := FindScopeByName(app.DefaultFirstUserScope)
 	if err != nil {
 		database.DBConn.Create(&model.Scope{
-			Name: app.DefaultSuperUserScope,
+			Name: app.DefaultFirstUserScope,
 		})
 		result = "done"
 	} else {
 		result = "skipped (already exists)"
 	}
-	fmt.Println("Creating", app.DefaultSuperUserScope, "scope", ".....", result)
+	fmt.Println("Creating", app.DefaultFirstUserScope, "scope", ".....", result)
 }
 
 func FindScopeByName(name string) (model.Scope, error) {
