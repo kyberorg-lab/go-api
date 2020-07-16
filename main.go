@@ -15,7 +15,7 @@ var (
 
 func init() {
 	database.InitDatabase()
-	scope.CreateSuperUserScope()
+	scope.CreateScopes()
 
 	err := user.CreateFirstUser()
 	if err != nil {

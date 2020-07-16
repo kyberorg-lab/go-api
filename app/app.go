@@ -28,4 +28,5 @@ const (
 //scopes
 const (
 	ScopeSuperAdmin = "SUPER_ADMIN"
+	ScopeUser       = "USER"
 )

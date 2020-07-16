@@ -7,19 +7,29 @@ import (
 	"go-rest/app/database/model"
 )
 
-func CreateSuperUserScope() {
+var (
+	applicationScopes = []string{app.ScopeSuperAdmin, app.ScopeUser}
+)
+
+func CreateScopes() {
+	for _, scopeName := range applicationScopes {
+		createScope(scopeName)
+	}
+}
+
+func createScope(scopeName string) {
 	var result string
 
-	_, err := FindScopeByName(app.DefaultFirstUserScope)
+	_, err := FindScopeByName(scopeName)
 	if err != nil {
 		database.DBConn.Create(&model.Scope{
-			Name: app.DefaultFirstUserScope,
+			Name: scopeName,
 		})
 		result = "done"
 	} else {
 		result = "skipped (already exists)"
 	}
-	fmt.Println("Creating", app.DefaultFirstUserScope, "scope", ".....", result)
+	fmt.Println("Creating", scopeName, "scope", ".....", result)
 }
 
 func FindScopeByName(name string) (model.Scope, error) {
