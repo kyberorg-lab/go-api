@@ -29,10 +29,10 @@ pipeline {
                     String hookUrl;
                     switch (env.BRANCH_NAME) {
                         case "master":
-                            hookUrl = "?tag=stable";
+                            hookUrl = "https://docker.yatech.eu/api/webhooks/b2bbdb1f-b4d1-48a6-85f1-f5661572f367?tag=stable";
                             break;
                         default:
-                            hookUrl = "?tag=" + env.BRANCH_NAME;
+                            hookUrl = "https://docker.yatech.eu/api/webhooks/b2bbdb1f-b4d1-48a6-85f1-f5661572f367?tag=" + env.BRANCH_NAME;
                             break;
                     }
                     //no hook - no deploy
