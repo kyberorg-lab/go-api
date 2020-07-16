@@ -9,32 +9,17 @@ import (
 	"go-rest/app/database/model"
 )
 
-type OldUser struct {
-	ID       uint64 `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-func GetSampleUser() OldUser {
-	return OldUser{
-		ID:       1,
-		Username: "username",
-		Password: "password",
-	}
-}
-
 func CreateFirstUser() error {
 	var result string
 
 	firstUserName, _ := osutils.GetEnv(app.EnvFirstUserName, app.DefaultFirstUserName)
 	firstUserPassword, passwordFromEnv := osutils.GetEnv(app.EnvFirstUserPassword, app.DefaultFirstUserPassword)
-	secretKeyPassword, _ := osutils.GetEnv(app.EnvEncryptSecretKeyPassword, app.DefaultSecretKeyPassword)
-	salt, _ := osutils.GetEnv(app.EnvEncryptSalt, app.DefaultSalt)
 
 	firstUser, firstUserExists := FindUserByName(firstUserName)
 	if firstUserExists != nil {
 		//we have to create it
-		encryptedPassword, encryptError := aesgcm.EncryptString(firstUserPassword, secretKeyPassword, salt)
+
+		encryptedPassword, encryptError := encryptPassword(firstUserPassword)
 		if encryptError != nil {
 			fmt.Println("Failed to encrypt password", encryptError)
 			return encryptError
@@ -64,7 +49,7 @@ func CreateFirstUser() error {
 		}
 	} else {
 		//checking if password is up-to-date
-		decryptedPassword, decryptionError := aesgcm.DecryptString(firstUser.Password, secretKeyPassword, salt)
+		decryptedPassword, decryptionError := DecryptPasswordForUser(firstUser)
 		if decryptionError != nil {
 			fmt.Println("Failed to decrypt password", decryptionError)
 			return decryptionError
@@ -72,7 +57,7 @@ func CreateFirstUser() error {
 
 		if firstUserPassword != decryptedPassword {
 			//password update needed
-			encryptedPass, encError := aesgcm.EncryptString(firstUserPassword, secretKeyPassword, salt)
+			encryptedPass, encError := encryptPassword(firstUserPassword)
 			if encError != nil {
 				fmt.Println("Failed to encrypt password", encError)
 				return encError
@@ -113,4 +98,28 @@ func SuperAdminsInSystemExist() (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func DecryptPasswordForUser(user model.User) (string, error) {
+	secretKeyPassword, _ := osutils.GetEnv(app.EnvEncryptSecretKeyPassword, app.DefaultSecretKeyPassword)
+	salt, _ := osutils.GetEnv(app.EnvEncryptSalt, app.DefaultSalt)
+
+	decryptedPassword, decryptionError := aesgcm.DecryptString(user.Password, secretKeyPassword, salt)
+	if decryptionError != nil {
+		return "", decryptionError
+	}
+	return decryptedPassword, nil
+
+}
+
+func encryptPassword(plainTextPassword string) (string, error) {
+	secretKeyPassword, _ := osutils.GetEnv(app.EnvEncryptSecretKeyPassword, app.DefaultSecretKeyPassword)
+	salt, _ := osutils.GetEnv(app.EnvEncryptSalt, app.DefaultSalt)
+
+	encryptedPassword, encryptError := aesgcm.EncryptString(plainTextPassword, secretKeyPassword, salt)
+	if encryptError != nil {
+		return "", encryptError
+	}
+
+	return encryptedPassword, nil
 }
