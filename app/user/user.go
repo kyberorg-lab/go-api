@@ -72,12 +72,12 @@ func CreateFirstUser() error {
 
 		if firstUserPassword != decryptedPassword {
 			//password update needed
-			encyptedPass, encError := aesgcm.EncryptString(firstUserPassword, secretKeyPassword, salt)
+			encryptedPass, encError := aesgcm.EncryptString(firstUserPassword, secretKeyPassword, salt)
 			if encError != nil {
 				fmt.Println("Failed to encrypt password", encError)
 				return encError
 			}
-			firstUser.Password = encyptedPass
+			firstUser.Password = encryptedPass
 			database.DBConn.Save(&firstUser)
 			result = "already exists (password updated)"
 		} else {
