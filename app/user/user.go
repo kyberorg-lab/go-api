@@ -37,7 +37,7 @@ func CreateFirstUser() error {
 		result = "created. Name: "
 		result += firstUserName
 
-		result += "Password "
+		result += " Password "
 		if passwordFromEnv {
 			result += "(value of "
 			result += app.EnvFirstUserPassword
