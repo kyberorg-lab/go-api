@@ -85,7 +85,7 @@ func CreateFirstUser() error {
 		}
 	}
 
-	fmt.Println("Creating SuperUser", ".....", result)
+	fmt.Println("Creating FirstUser", ".....", result)
 	return nil
 }
 
