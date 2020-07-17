@@ -31,15 +31,14 @@ func AuthEndpoint(context *gin.Context) {
 		return
 	}
 
-	decryptedPassword, decryptError := user.DecryptPasswordForUser(foundUser)
-	if decryptError != nil {
-		fmt.Println("Decrypt error ", decryptError)
+	isPasswordValid, compareError := user.CheckPasswordForUser(foundUser, u.Password)
+	if compareError != nil {
+		fmt.Println("Password hash compare error ", compareError)
 		context.JSON(http.StatusInternalServerError, utils.ErrorJson("Hups something went wrong at our side"))
 		return
 	}
 
-	if u.Password != decryptedPassword {
-		fmt.Println("No such user ", u.Username)
+	if !isPasswordValid {
 		context.JSON(http.StatusUnauthorized, utils.ErrorJson("Please provide valid login details"))
 		return
 	}

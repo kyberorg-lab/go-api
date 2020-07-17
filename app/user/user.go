@@ -1,12 +1,13 @@
 package user
 
 import (
+	"errors"
 	"fmt"
-	"github.com/kyberorg/go-utils/crypto/aesgcm"
 	"github.com/kyberorg/go-utils/osutils"
 	"go-rest/app"
 	"go-rest/app/database"
 	"go-rest/app/database/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateFirstUser() error {
@@ -29,15 +30,15 @@ func CreateFirstUser() error {
 	if firstUserExists != nil {
 		//we have to create it
 
-		encryptedPassword, encryptError := encryptPassword(firstUserPassword)
-		if encryptError != nil {
-			fmt.Println("Failed to encrypt password", encryptError)
-			return encryptError
+		hashedPassword, hasError := hashPassword(firstUserPassword)
+		if hasError != nil {
+			fmt.Println("Failed to hash password", hasError)
+			return hasError
 		}
 
 		database.DBConn.Create(&model.User{
 			Username: firstUserName,
-			Password: encryptedPassword,
+			Password: hashedPassword,
 			Scopes: []model.Scope{
 				{Name: app.DefaultFirstUserScope},
 			},
@@ -59,20 +60,20 @@ func CreateFirstUser() error {
 		}
 	} else {
 		//checking if password is up-to-date
-		decryptedPassword, decryptionError := DecryptPasswordForUser(firstUser)
-		if decryptionError != nil {
-			fmt.Println("Failed to decrypt password", decryptionError)
-			return decryptionError
+		isPasswordSame, compareError := CheckPasswordForUser(firstUser, firstUserPassword)
+		if compareError != nil {
+			fmt.Println("Failed to compare hashes", compareError)
+			return compareError
 		}
 
-		if firstUserPassword != decryptedPassword {
+		if !isPasswordSame {
 			//password update needed
-			encryptedPass, encError := encryptPassword(firstUserPassword)
-			if encError != nil {
-				fmt.Println("Failed to encrypt password", encError)
-				return encError
+			hashedPass, hashError := hashPassword(firstUserPassword)
+			if hashError != nil {
+				fmt.Println("Failed to hash password", hashError)
+				return hashError
 			}
-			firstUser.Password = encryptedPass
+			firstUser.Password = hashedPass
 			database.DBConn.Save(&firstUser)
 			result = "already exists (password updated)"
 		} else {
@@ -110,16 +111,16 @@ func SuperAdminsInSystemExist() (bool, error) {
 	return false, nil
 }
 
-func DecryptPasswordForUser(user model.User) (string, error) {
-	secretKeyPassword, _ := osutils.GetEnv(app.EnvEncryptSecretKeyPassword, app.DefaultSecretKeyPassword)
-	salt, _ := osutils.GetEnv(app.EnvEncryptSalt, app.DefaultSalt)
-
-	decryptedPassword, decryptionError := aesgcm.DecryptString(user.Password, secretKeyPassword, salt)
-	if decryptionError != nil {
-		return "", decryptionError
+func CheckPasswordForUser(user model.User, passwordCandidate string) (bool, error) {
+	if len(passwordCandidate) == 0 {
+		return false, nil
 	}
-	return decryptedPassword, nil
+	if len(user.Password) == 0 {
+		return false, errors.New("user has empty password")
+	}
 
+	err := bcrypt.CompareHashAndPassword([]byte(passwordCandidate), []byte(user.Password))
+	return err == nil, err
 }
 
 func CountUsers() (int, error) {
@@ -128,14 +129,7 @@ func CountUsers() (int, error) {
 	return numberOfUsers, result.Error
 }
 
-func encryptPassword(plainTextPassword string) (string, error) {
-	secretKeyPassword, _ := osutils.GetEnv(app.EnvEncryptSecretKeyPassword, app.DefaultSecretKeyPassword)
-	salt, _ := osutils.GetEnv(app.EnvEncryptSalt, app.DefaultSalt)
-
-	encryptedPassword, encryptError := aesgcm.EncryptString(plainTextPassword, secretKeyPassword, salt)
-	if encryptError != nil {
-		return "", encryptError
-	}
-
-	return encryptedPassword, nil
+func hashPassword(plainTextPassword string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(plainTextPassword), bcrypt.MaxCost)
+	return string(bytes), err
 }
