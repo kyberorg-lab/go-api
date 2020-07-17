@@ -12,6 +12,16 @@ import (
 func CreateFirstUser() error {
 	var result string
 
+	numOfUsers, countError := CountUsers()
+	if countError != nil {
+		return countError
+	}
+	if numOfUsers > 0 {
+		result = "skipping (already exists)"
+		fmt.Println("Creating FirstUser", ".....", result)
+		return nil
+	}
+
 	firstUserName, _ := osutils.GetEnv(app.EnvFirstUserName, app.DefaultFirstUserName)
 	firstUserPassword, passwordFromEnv := osutils.GetEnv(app.EnvFirstUserPassword, app.DefaultFirstUserPassword)
 
@@ -110,6 +120,12 @@ func DecryptPasswordForUser(user model.User) (string, error) {
 	}
 	return decryptedPassword, nil
 
+}
+
+func CountUsers() (int, error) {
+	numberOfUsers := 0
+	result := database.DBConn.Model(&model.User{}).Count(&numberOfUsers)
+	return numberOfUsers, result.Error
 }
 
 func encryptPassword(plainTextPassword string) (string, error) {
