@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const bCryptCost = 17
+const bCryptCost = 14
 
 func CreateFirstUser() error {
 	var result string
@@ -121,7 +121,7 @@ func CheckPasswordForUser(user model.User, passwordCandidate string) (bool, erro
 		return false, errors.New("user has empty password")
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(passwordCandidate), []byte(user.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(passwordCandidate))
 	return err == nil, err
 }
 

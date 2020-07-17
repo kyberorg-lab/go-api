@@ -8,6 +8,7 @@ import (
 	"go-rest/app/jwt"
 	"go-rest/app/user"
 	"go-rest/app/utils"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -33,9 +34,13 @@ func AuthEndpoint(context *gin.Context) {
 
 	isPasswordValid, compareError := user.CheckPasswordForUser(foundUser, u.Password)
 	if compareError != nil {
-		fmt.Println("Password hash compare error ", compareError)
-		context.JSON(http.StatusInternalServerError, utils.ErrorJson("Hups something went wrong at our side"))
-		return
+		if compareError == bcrypt.ErrMismatchedHashAndPassword {
+			isPasswordValid = false
+		} else {
+			fmt.Println("Password hash compare error ", compareError)
+			context.JSON(http.StatusInternalServerError, utils.ErrorJson("Hups something went wrong at our side"))
+			return
+		}
 	}
 
 	if !isPasswordValid {
