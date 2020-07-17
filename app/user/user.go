@@ -10,6 +10,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const bCryptCost = 17
+
 func CreateFirstUser() error {
 	var result string
 
@@ -130,6 +132,6 @@ func CountUsers() (int, error) {
 }
 
 func hashPassword(plainTextPassword string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(plainTextPassword), bcrypt.MaxCost)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(plainTextPassword), bCryptCost)
 	return string(bytes), err
 }
