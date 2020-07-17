@@ -29,7 +29,7 @@ func InitDatabase() {
 	fmt.Println("Database successfully connected. Database location:", dbFile)
 
 	//auto migrate
-	DBConn.AutoMigrate(&model.Scope{}, &model.User{})
+	DBConn.AutoMigrate(&model.Scope{}, &model.User{}, &model.Token{})
 	fmt.Println("Database migrations are executed")
 }
 

@@ -3,7 +3,7 @@ REST with JWT written in go
 
 ## Endpoints
 
-### POST /auth 
+### POST /auth/login
 Scope: no auth needed
 
 * 422 - when send malformed JSON + ErrorJson

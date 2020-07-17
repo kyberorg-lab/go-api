@@ -35,15 +35,16 @@ func main() {
 		})
 	})
 
-	router.POST("/auth", api.AuthEndpoint)
+	authApi := router.Group("/auth")
+	{
+		authApi.POST("login", api.LoginEndpoint)
+		authApi.POST("refresh-token", api.RefreshTokenEndpoint)
+		authApi.POST("logout", api.LogoutEndpoint)
+	}
+
 	userApi := router.Group("/users")
 	{
 		userApi.POST("", api.CreateUserEndpoint)
-	}
-
-	scopeApi := router.Group("/scope")
-	{
-		scopeApi.POST("", api.CreateScopeEndpoint)
 	}
 
 	defer database.CloseDatabase()
