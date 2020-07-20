@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-rest/app"
 	tokenService "go-rest/app/token"
-	"go-rest/app/utils"
 	"net/http"
 )
 
@@ -23,5 +23,5 @@ func GetProfileEndpoint(context *gin.Context) {
 }
 
 func GetMySessionsEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, utils.ErrorJson("Not implemented yet"))
+	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.NotImplemented})
 }

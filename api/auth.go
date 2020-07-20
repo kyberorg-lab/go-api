@@ -13,6 +13,12 @@ import (
 	"net/http"
 )
 
+const (
+	UserPassWrong         = "Please provide valid login details"
+	CannotCreateTokens    = "Failed to create tokens"
+	SuccessfullyLoggedOut = "Successfully logged out"
+)
+
 type LoginJson struct {
 	Username string `json:"username" binding: "required,min=3,max=100"`
 	Password string `json:"password" binding: "required,min=3,max=256"`
@@ -27,14 +33,14 @@ func LoginEndpoint(context *gin.Context) {
 	var loginJson LoginJson
 
 	if err := context.ShouldBindJSON(&loginJson); err != nil {
-		context.JSON(http.StatusUnprocessableEntity, utils.ErrorJsonWithError("Invalid json provided", err))
+		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.InvalidJson})
 		return
 	}
 
 	foundUser, searchError := user.FindUserByName(loginJson.Username)
 	if searchError != nil {
 		fmt.Println("No such user ", loginJson.Username)
-		context.JSON(http.StatusUnauthorized, utils.ErrorJson("Please provide valid login details"))
+		context.JSON(http.StatusUnauthorized, app.ErrJson{Err: UserPassWrong})
 		return
 	}
 
@@ -44,13 +50,13 @@ func LoginEndpoint(context *gin.Context) {
 			isPasswordValid = false
 		} else {
 			fmt.Println("Password hash compare error ", compareError)
-			context.JSON(http.StatusInternalServerError, utils.ErrorJson("Hups something went wrong at our side"))
+			context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
 			return
 		}
 	}
 
 	if !isPasswordValid {
-		context.JSON(http.StatusUnauthorized, utils.ErrorJson("Please provide valid login details"))
+		context.JSON(http.StatusUnauthorized, app.ErrJson{Err: UserPassWrong})
 		return
 	}
 
@@ -59,7 +65,7 @@ func LoginEndpoint(context *gin.Context) {
 
 	tokenDetails, err := jwt.CreateToken(foundUser, userAgent)
 	if err != nil {
-		context.JSON(http.StatusUnprocessableEntity, utils.ErrorJson(err.Error()))
+		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: CannotCreateTokens})
 		return
 	}
 
@@ -76,17 +82,17 @@ func RefreshTokenEndpoint(context *gin.Context) {
 
 	refreshToken, searchError := tokenService.GetTokenByUUID(tokenClaims.Uuid)
 	if searchError != nil {
-		context.JSON(http.StatusInternalServerError, utils.ErrorJson(app.GeneralError))
+		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
 	}
 	foundUser, userSearchError := user.FindUserByName(refreshToken.UserName)
 	if userSearchError != nil {
-		context.JSON(http.StatusForbidden, utils.ErrorJson(app.AccessDenied))
+		context.JSON(http.StatusForbidden, app.ErrJson{Err: app.AccessDenied})
 		return
 	}
 
 	newTokenPairDetails, tokenCreateError := jwt.CreateToken(foundUser, refreshToken.UserAgent)
 	if tokenCreateError != nil {
-		context.JSON(http.StatusForbidden, utils.ErrorJson(app.AccessDenied))
+		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.AccessDenied})
 		return
 	}
 
@@ -102,8 +108,8 @@ func LogoutEndpoint(context *gin.Context) {
 	tokenClaims, _ := tokenService.GetToken(context)
 	delError := tokenService.DeleteToken(tokenClaims.Uuid)
 	if delError != nil {
-		context.JSON(http.StatusInternalServerError, utils.ErrorJson(app.GeneralError))
+		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
 		return
 	}
-	context.JSON(http.StatusOK, "Successfully logged out")
+	context.JSON(http.StatusOK, app.MessageJson{Message: SuccessfullyLoggedOut})
 }

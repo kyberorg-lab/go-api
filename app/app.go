@@ -44,6 +44,16 @@ const (
 
 //errors
 const (
-	GeneralError = "Something went wrong at out side"
-	AccessDenied = "AccessDenied"
+	InvalidJson    = "Invalid json provided"
+	GeneralError   = "Something went wrong at out side"
+	AccessDenied   = "AccessDenied"
+	NotImplemented = "Not implemented yet"
 )
+
+type MessageJson struct {
+	Message string `json:"message"`
+}
+
+type ErrJson struct {
+	Err string `json:"err"`
+}

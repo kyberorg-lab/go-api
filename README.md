@@ -3,13 +3,33 @@ REST with JWT written in go
 
 ## Endpoints
 
-### POST /auth/login
-Scope: no auth needed
+### GET /health
+* 200 - when app is alive
 
+### POST /auth/login
+Scope/Auth: JSON with a username and password
+
+* 200 - Tokens issued + Tokens (access, refresh)
 * 422 - when send malformed JSON + ErrorJson
 * 401 - login details wrong + ErrorJson
 * 500 - server-side error + ErrorJson
-* 200 - Token issued + Token
+
+### POST /auth/refresh-token
+Scope/Auth: Refresh token
+
+* 201 - New Tokens issued + Tokens (access, refresh)
+* 401 - when no token or expired token + ErrorJson
+* 403 - when refresh token's owner has no permissions to update tokens
+* 422 - when send malformed JSON + ErrorJson
+* 500 - when server-side issue + ErrorJson
+
+### POST /auth/logout
+Scope/Auth: Access token
+
+* 200 - success + MessageJson
+* 401 - when no token or expired token + ErrorJson
+
+
 
 ## Env Vars
 
