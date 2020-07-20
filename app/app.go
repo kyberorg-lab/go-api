@@ -27,6 +27,13 @@ const (
 	ScopeUser       = "USER"
 )
 
+//user-agent related
+const (
+	UserAgentUnknown = "Unknown"
+	IPUnknown        = "0.0.0.0"
+	UAIPDelimiter    = "---"
+)
+
 type Token struct {
 	Token string `json:"token"  binding:"required"`
 }
