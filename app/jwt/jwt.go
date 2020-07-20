@@ -36,8 +36,38 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	tokenDetails := &details.TokenDetails{}
 	tokenDetails.CreatedAt = time.Now().Unix()
 
-	tokenDetails.AtExpires = time.Now().Add(app.TimeoutAccessToken).Unix()
-	tokenDetails.AccessUuid = uuid.NewV4().String()
+	//Creating Refresh Token
+	//go and check if user agent already have session
+	alreadyStoredToken, tokenSearchError := tokenService.GetTokenForUserAgent(userAgent)
+	userAgentHasValidToken := tokenSearchError == nil
+
+	if userAgentHasValidToken {
+		//re-use token
+		tokenDetails.RefreshTokenExpires = alreadyStoredToken.Expires
+		tokenDetails.RefreshUuid = alreadyStoredToken.RefreshUuid
+		tokenDetails.RefreshToken = alreadyStoredToken.RefreshToken
+	} else {
+		//new token
+		tokenDetails.RefreshTokenExpires = time.Now().Add(app.TimeoutRefreshToken).Unix()
+		tokenDetails.RefreshUuid = uuid.NewV4().String()
+
+		refreshTokenClaims := AppClaims{
+			Uuid: tokenDetails.RefreshUuid,
+			StandardClaims: jwt.StandardClaims{
+				Subject:   user.Username,
+				ExpiresAt: tokenDetails.RefreshTokenExpires,
+				IssuedAt:  tokenDetails.CreatedAt,
+				NotBefore: tokenDetails.CreatedAt,
+			},
+		}
+		refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS512, refreshTokenClaims)
+		tokenDetails.RefreshToken, tokenSearchError = refreshToken.SignedString(signingKey)
+		if tokenSearchError != nil {
+			return nil, tokenSearchError
+		}
+	}
+
+	tokenDetails.AccessTokenExpires = time.Now().Add(app.TimeoutAccessToken).Unix()
 
 	tokenDetails.UserAgent = userAgent
 
@@ -45,11 +75,11 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	//Creating Access Token
 	accessTokenClaims := AppClaims{
 		Authorized: true,
-		Uuid:       tokenDetails.AccessUuid,
+		Uuid:       tokenDetails.RefreshUuid,
 		Scopes:     userService.GetScopeNames(user),
 		StandardClaims: jwt.StandardClaims{
 			Subject:   user.Username,
-			ExpiresAt: tokenDetails.AtExpires,
+			ExpiresAt: tokenDetails.AccessTokenExpires,
 			IssuedAt:  tokenDetails.CreatedAt,
 			NotBefore: tokenDetails.CreatedAt,
 		},
@@ -59,37 +89,6 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	tokenDetails.AccessToken, err = accessToken.SignedString(signingKey)
 	if err != nil {
 		return nil, err
-	}
-
-	//Creating Refresh Token
-	//go and check if user agent already have session
-	alreadyStoredToken, tokenSearchError := tokenService.GetTokenForUserAgent(userAgent)
-	userAgentHasValidToken := tokenSearchError == nil
-
-	if userAgentHasValidToken {
-		//re-use token
-		tokenDetails.RtExpires = alreadyStoredToken.Expires
-		tokenDetails.RefreshUuid = alreadyStoredToken.RefreshUuid
-		tokenDetails.RefreshToken = alreadyStoredToken.RefreshToken
-	} else {
-		//new token
-		tokenDetails.RtExpires = time.Now().Add(app.TimeoutRefreshToken).Unix()
-		tokenDetails.RefreshUuid = uuid.NewV4().String()
-
-		refreshTokenClaims := AppClaims{
-			Uuid: tokenDetails.RefreshUuid,
-			StandardClaims: jwt.StandardClaims{
-				Subject:   user.Username,
-				ExpiresAt: tokenDetails.RtExpires,
-				IssuedAt:  tokenDetails.CreatedAt,
-				NotBefore: tokenDetails.CreatedAt,
-			},
-		}
-		rt := jwt.NewWithClaims(jwt.SigningMethodHS512, refreshTokenClaims)
-		tokenDetails.RefreshToken, tokenSearchError = rt.SignedString(signingKey)
-		if tokenSearchError != nil {
-			return nil, tokenSearchError
-		}
 	}
 
 	return tokenDetails, nil

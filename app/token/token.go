@@ -15,7 +15,7 @@ func SaveToken(tokenDetails *details.TokenDetails) error {
 		return errors.New("token details are empty")
 	}
 
-	_, queryErr := getTokenByUUID(tokenDetails.RefreshUuid)
+	_, queryErr := GetTokenByUUID(tokenDetails.RefreshUuid)
 	if queryErr == nil {
 		//token already exist - nothing to do
 		return nil
@@ -31,7 +31,7 @@ func SaveToken(tokenDetails *details.TokenDetails) error {
 		UserAgent:    tokenDetails.UserAgent,
 		RefreshToken: tokenDetails.RefreshToken,
 		RefreshUuid:  tokenDetails.RefreshUuid,
-		Expires:      tokenDetails.RtExpires,
+		Expires:      tokenDetails.RefreshTokenExpires,
 		IssuedAt:     tokenDetails.CreatedAt,
 	}
 
@@ -50,7 +50,7 @@ func GetToken(context *gin.Context) (jwt.AppClaims, error) {
 	return claims, err
 }
 
-func getTokenByUUID(tokenUuid string) (model.Token, error) {
+func GetTokenByUUID(tokenUuid string) (model.Token, error) {
 	var token model.Token
 	result := database.DBConn.Where("refresh_uuid = ?", tokenUuid).First(&token)
 	if result.Error != nil {
