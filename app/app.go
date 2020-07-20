@@ -1,5 +1,7 @@
 package app
 
+import "time"
+
 //Envs
 const (
 	EnvJwtSecret         = "JWT_SECRET"
@@ -32,6 +34,12 @@ const (
 	UserAgentUnknown = "Unknown"
 	IPUnknown        = "0.0.0.0"
 	IPUADelimiter    = "---"
+)
+
+//token timeouts
+const (
+	TimeoutAccessToken  = 15 * time.Minute
+	TimeoutRefreshToken = 24 * time.Hour
 )
 
 type Token struct {

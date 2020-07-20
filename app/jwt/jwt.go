@@ -36,7 +36,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	tokenDetails := &details.TokenDetails{}
 	tokenDetails.CreatedAt = time.Now().Unix()
 
-	tokenDetails.AtExpires = time.Now().Add(15 * time.Minute).Unix()
+	tokenDetails.AtExpires = time.Now().Add(app.TimeoutAccessToken).Unix()
 	tokenDetails.AccessUuid = uuid.NewV4().String()
 
 	tokenDetails.UserAgent = userAgent
@@ -73,7 +73,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 		tokenDetails.RefreshToken = alreadyStoredToken.RefreshToken
 	} else {
 		//new token
-		tokenDetails.RtExpires = time.Now().Add(24 * time.Hour).Unix()
+		tokenDetails.RtExpires = time.Now().Add(app.TimeoutRefreshToken).Unix()
 		tokenDetails.RefreshUuid = uuid.NewV4().String()
 
 		refreshTokenClaims := AppClaims{
