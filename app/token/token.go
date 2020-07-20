@@ -59,3 +59,16 @@ func GetTokenByUUID(tokenUuid string) (model.Token, error) {
 		return token, nil
 	}
 }
+
+func DeleteToken(tokenUuid string) error {
+	tokenToBeDeleted, searchError := GetTokenByUUID(tokenUuid)
+	if searchError != nil {
+		return searchError
+	}
+	result := database.DBConn.Unscoped().Delete(&tokenToBeDeleted)
+	if result.Error != nil {
+		return result.Error
+	} else {
+		return nil
+	}
+}

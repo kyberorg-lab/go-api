@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-rest/app/jwt"
 	"go-rest/app/token"
+	tokenService "go-rest/app/token"
 	"go-rest/app/user"
 	"go-rest/app/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -74,5 +75,11 @@ func RefreshTokenEndpoint(context *gin.Context) {
 }
 
 func LogoutEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, utils.ErrorJson("Not implemented yet"))
+	tokenClaims, _ := tokenService.GetToken(context)
+	delError := tokenService.DeleteToken(tokenClaims.Uuid)
+	if delError != nil {
+		context.JSON(http.StatusInternalServerError, "Something went wrong at out side")
+		return
+	}
+	context.JSON(http.StatusOK, "Successfully logged out")
 }
