@@ -42,6 +42,8 @@ const (
 	TimeoutRefreshToken = 24 * time.Hour
 )
 
-type Token struct {
-	Token string `json:"token"  binding:"required"`
-}
+//errors
+const (
+	GeneralError = "Something went wrong at out side"
+	AccessDenied = "AccessDenied"
+)

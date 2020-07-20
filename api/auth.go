@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-rest/app"
 	"go-rest/app/jwt"
 	"go-rest/app/token"
 	tokenService "go-rest/app/token"
@@ -71,14 +72,37 @@ func LoginEndpoint(context *gin.Context) {
 }
 
 func RefreshTokenEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, utils.ErrorJson("Not implemented yet"))
+	tokenClaims, _ := tokenService.GetToken(context)
+
+	refreshToken, searchError := tokenService.GetTokenByUUID(tokenClaims.Uuid)
+	if searchError != nil {
+		context.JSON(http.StatusInternalServerError, utils.ErrorJson(app.GeneralError))
+	}
+	foundUser, userSearchError := user.FindUserByName(refreshToken.UserName)
+	if userSearchError != nil {
+		context.JSON(http.StatusForbidden, utils.ErrorJson(app.AccessDenied))
+		return
+	}
+
+	newTokenPairDetails, tokenCreateError := jwt.CreateToken(foundUser, refreshToken.UserAgent)
+	if tokenCreateError != nil {
+		context.JSON(http.StatusForbidden, utils.ErrorJson(app.AccessDenied))
+		return
+	}
+
+	newTokens := Tokens{
+		AccessToken:  newTokenPairDetails.AccessToken,
+		RefreshToken: newTokenPairDetails.RefreshToken,
+	}
+
+	context.JSON(http.StatusCreated, newTokens)
 }
 
 func LogoutEndpoint(context *gin.Context) {
 	tokenClaims, _ := tokenService.GetToken(context)
 	delError := tokenService.DeleteToken(tokenClaims.Uuid)
 	if delError != nil {
-		context.JSON(http.StatusInternalServerError, "Something went wrong at out side")
+		context.JSON(http.StatusInternalServerError, utils.ErrorJson(app.GeneralError))
 		return
 	}
 	context.JSON(http.StatusOK, "Successfully logged out")
