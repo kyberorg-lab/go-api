@@ -6,6 +6,7 @@ import (
 	"go-rest/app/database"
 	"go-rest/app/scope"
 	"go-rest/app/user"
+	"go-rest/middleware"
 	"log"
 )
 
@@ -42,13 +43,13 @@ func main() {
 		authApi.POST("logout", api.LogoutEndpoint)
 	}
 
-	profileApi := router.Group("/profile")
+	profileApi := router.Group("/profile", middleware.TokenAuthMiddleware())
 	{
 		profileApi.GET("", api.GetProfileEndpoint)
 		profileApi.GET("/sessions", api.GetMySessionsEndpoint)
 	}
 
-	userApi := router.Group("/users")
+	userApi := router.Group("/users", middleware.TokenAuthMiddleware())
 	{
 		userApi.POST("", api.CreateUserEndpoint)
 	}

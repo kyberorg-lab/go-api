@@ -15,11 +15,11 @@ import (
 
 const (
 	EmptyTokenStringError = "got empty string instead of token"
-	EmptyTokenError       = "parsed to empty token"
+	EmptyTokenError       = "got empty token"
 	MalformedTokenError   = "malformed token"
 	TokenExpired          = "token is either expired or not active yet"
 	MalformedClaimsError  = "got malformed claims"
-	GeneralError          = "something wrong"
+	GeneralError          = "something went wrong"
 )
 
 var signingKey = []byte(os.Getenv(app.EnvJwtSecret))
@@ -120,7 +120,7 @@ func ParseToken(tokenString string) (AppClaims, error) {
 			// Token is either expired or not active yet
 			return AppClaims{}, errors.New(TokenExpired)
 		} else {
-			return AppClaims{}, errors.New(GeneralError)
+			return AppClaims{}, errors.New(MalformedTokenError)
 		}
 	} else {
 		return AppClaims{}, errors.New(GeneralError)

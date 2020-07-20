@@ -2,10 +2,12 @@ package token
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"go-rest/app/database"
 	"go-rest/app/database/model"
 	"go-rest/app/jwt"
 	"go-rest/app/token/details"
+	"go-rest/app/utils"
 )
 
 func SaveToken(tokenDetails *details.TokenDetails) error {
@@ -37,7 +39,13 @@ func SaveToken(tokenDetails *details.TokenDetails) error {
 	return saveResult.Error
 }
 
-func VerifyAndExtractToken(token string) (jwt.AppClaims, error) {
+func VerifyToken(token string) error {
+	_, err := jwt.ParseToken(token)
+	return err
+}
+
+func GetToken(context *gin.Context) (jwt.AppClaims, error) {
+	token := utils.ExtractToken(context)
 	claims, err := jwt.ParseToken(token)
 	return claims, err
 }
