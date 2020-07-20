@@ -54,7 +54,7 @@ func LoginEndpoint(context *gin.Context) {
 	}
 
 	//user agent = UA header or ip
-	userAgent := utils.GetClientIP(context) + app.UAIPDelimiter + utils.GetUserAgent(context)
+	userAgent := utils.GetClientIP(context) + app.IPUADelimiter + utils.GetUserAgent(context)
 
 	tokenDetails, err := jwt.CreateToken(foundUser, userAgent)
 	if err != nil {

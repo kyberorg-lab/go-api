@@ -31,7 +31,7 @@ const (
 const (
 	UserAgentUnknown = "Unknown"
 	IPUnknown        = "0.0.0.0"
-	UAIPDelimiter    = "---"
+	IPUADelimiter    = "---"
 )
 
 type Token struct {
