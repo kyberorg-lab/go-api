@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go-rest/app"
 	"go-rest/app/jwt"
 	"go-rest/app/token"
 	"go-rest/app/user"
@@ -53,8 +52,8 @@ func LoginEndpoint(context *gin.Context) {
 		return
 	}
 
-	//user agent = UA header or ip
-	userAgent := utils.GetClientIP(context) + app.IPUADelimiter + utils.GetUserAgent(context)
+	//user agent = UA header plus ip
+	userAgent := utils.GetUniqueUserAgent(context)
 
 	tokenDetails, err := jwt.CreateToken(foundUser, userAgent)
 	if err != nil {
@@ -66,7 +65,7 @@ func LoginEndpoint(context *gin.Context) {
 
 	context.JSON(http.StatusOK, Tokens{
 		AccessToken:  tokenDetails.AccessToken,
-		RefreshToken: tokenDetails.RefreshUuid,
+		RefreshToken: tokenDetails.RefreshToken,
 	})
 }
 

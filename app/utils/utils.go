@@ -22,7 +22,11 @@ func ErrorJsonWithError(message string, err error) ErrJson {
 	}
 }
 
-func GetUserAgent(context *gin.Context) string {
+func GetUniqueUserAgent(context *gin.Context) string {
+	return getClientIP(context) + app.IPUADelimiter + getUserAgent(context)
+}
+
+func getUserAgent(context *gin.Context) string {
 	userAgent := context.GetHeader("User-Agent")
 	if userAgent == "" {
 		userAgent = app.UserAgentUnknown
@@ -30,7 +34,7 @@ func GetUserAgent(context *gin.Context) string {
 	return userAgent
 }
 
-func GetClientIP(context *gin.Context) string {
+func getClientIP(context *gin.Context) string {
 	ip := context.ClientIP()
 	if ip == "" {
 		ip = app.IPUnknown

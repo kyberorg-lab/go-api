@@ -6,6 +6,7 @@ import (
 	"github.com/satori/go.uuid"
 	"go-rest/app"
 	"go-rest/app/database/model"
+	"go-rest/app/token"
 	"go-rest/app/token/details"
 	user2 "go-rest/app/user"
 	"os"
@@ -30,22 +31,18 @@ type AppClaims struct {
 	jwt.StandardClaims
 }
 
+//noinspection GoNilness
 func CreateToken(user model.User, userAgent string) (*details.TokenDetails, error) {
-
 	tokenDetails := &details.TokenDetails{}
 	tokenDetails.CreatedAt = time.Now().Unix()
 
 	tokenDetails.AtExpires = time.Now().Add(15 * time.Minute).Unix()
 	tokenDetails.AccessUuid = uuid.NewV4().String()
 
-	tokenDetails.RtExpires = time.Now().Add(24 * time.Hour).Unix()
-	tokenDetails.RefreshUuid = uuid.NewV4().String()
-
 	tokenDetails.UserAgent = userAgent
 
 	var err error
 	//Creating Access Token
-
 	accessTokenClaims := AppClaims{
 		Authorized: true,
 		Uuid:       tokenDetails.AccessUuid,
@@ -64,22 +61,37 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 		return nil, err
 	}
 
-	refreshTokenClaims := AppClaims{
-		Uuid: tokenDetails.RefreshUuid,
-		StandardClaims: jwt.StandardClaims{
-			Subject:   user.Username,
-			ExpiresAt: tokenDetails.RtExpires,
-			IssuedAt:  tokenDetails.CreatedAt,
-			NotBefore: tokenDetails.CreatedAt,
-		},
+	//Creating Refresh Token
+	//go and check if user agent already have session
+	alreadyStoredToken, tokenSearchError := token.GetTokenForUserAgent(userAgent)
+	userAgentHasValidToken := tokenSearchError == nil
+
+	if userAgentHasValidToken {
+		//re-use token
+		tokenDetails.RtExpires = alreadyStoredToken.Expires
+		tokenDetails.RefreshUuid = alreadyStoredToken.RefreshUuid
+		tokenDetails.RefreshToken = alreadyStoredToken.RefreshToken
+	} else {
+		//new token
+		tokenDetails.RtExpires = time.Now().Add(24 * time.Hour).Unix()
+		tokenDetails.RefreshUuid = uuid.NewV4().String()
+
+		refreshTokenClaims := AppClaims{
+			Uuid: tokenDetails.RefreshUuid,
+			StandardClaims: jwt.StandardClaims{
+				Subject:   user.Username,
+				ExpiresAt: tokenDetails.RtExpires,
+				IssuedAt:  tokenDetails.CreatedAt,
+				NotBefore: tokenDetails.CreatedAt,
+			},
+		}
+		rt := jwt.NewWithClaims(jwt.SigningMethodHS512, refreshTokenClaims)
+		tokenDetails.RefreshToken, tokenSearchError = rt.SignedString(signingKey)
+		if tokenSearchError != nil {
+			return nil, tokenSearchError
+		}
 	}
 
-	//Creating Refresh Token
-	rt := jwt.NewWithClaims(jwt.SigningMethodHS512, refreshTokenClaims)
-	tokenDetails.RefreshToken, err = rt.SignedString(signingKey)
-	if err != nil {
-		return nil, err
-	}
 	return tokenDetails, nil
 }
 
