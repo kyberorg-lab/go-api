@@ -29,7 +29,11 @@ Scope/Auth: Access token
 * 200 - success + MessageJson
 * 401 - when no token or expired token + ErrorJson
 
+### GET /profile
+Scope/Auth: Access token
 
+* 200 - Ok + Profile Data JSON
+* 401 - when token absent, not valid or expired
 
 ## Env Vars
 
