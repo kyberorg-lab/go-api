@@ -4,8 +4,8 @@ import "github.com/jinzhu/gorm"
 
 type User struct {
 	gorm.Model
-	Username string  `json:"username" binding:"required"`
-	Password string  `json:"password" binding:"required"`
-	Scopes   []Scope `json:"scopes"`
-	Active   bool    `json:"active"`
+	Username string
+	Password string
+	Scopes   []Scope `gorm:"many2many:user_scopes"`
+	Active   bool
 }

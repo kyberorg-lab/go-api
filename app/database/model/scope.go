@@ -4,5 +4,5 @@ import "github.com/jinzhu/gorm"
 
 type Scope struct {
 	gorm.Model
-	Name string `json:"name"`
+	Name string
 }

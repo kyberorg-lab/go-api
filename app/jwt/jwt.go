@@ -7,6 +7,7 @@ import (
 	"go-rest/app"
 	"go-rest/app/database/model"
 	"go-rest/app/token/details"
+	user2 "go-rest/app/user"
 	"os"
 	"time"
 )
@@ -23,9 +24,9 @@ const (
 var signingKey = []byte(os.Getenv(app.EnvJwtSecret))
 
 type AppClaims struct {
-	Authorized bool          `json:"auth,omitempty"`
-	Uuid       string        `json:"uuid,omitempty"`
-	Scopes     []model.Scope `json:"sco, omitempty"`
+	Authorized bool     `json:"auth,omitempty"`
+	Uuid       string   `json:"uuid,omitempty"`
+	Scopes     []string `json:"sco, omitempty"`
 	jwt.StandardClaims
 }
 
@@ -48,7 +49,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	accessTokenClaims := AppClaims{
 		Authorized: true,
 		Uuid:       tokenDetails.AccessUuid,
-		Scopes:     user.Scopes,
+		Scopes:     user2.GetScopeNames(user),
 		StandardClaims: jwt.StandardClaims{
 			Subject:   user.Username,
 			ExpiresAt: tokenDetails.AtExpires,
