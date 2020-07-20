@@ -10,7 +10,7 @@ import (
 
 type Profile struct {
 	Username    string   `json:"username"`
-	Permissions []string `json: "permissions"`
+	Permissions []string `json:"permissions"`
 }
 
 func GetProfileEndpoint(context *gin.Context) {
