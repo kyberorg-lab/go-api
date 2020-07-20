@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-rest/app"
 	"net"
+	"strings"
 )
 
 type ErrJson struct {
@@ -24,6 +25,15 @@ func ErrorJsonWithError(message string, err error) ErrJson {
 
 func GetUniqueUserAgent(context *gin.Context) string {
 	return getClientIP(context) + app.IPUADelimiter + getUserAgent(context)
+}
+
+func ExtractToken(context *gin.Context) string {
+	bearerToken := context.GetHeader("Authorization")
+	strArr := strings.Split(bearerToken, " ")
+	if len(strArr) == 2 {
+		return strArr[1]
+	}
+	return ""
 }
 
 func getUserAgent(context *gin.Context) string {

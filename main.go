@@ -42,6 +42,12 @@ func main() {
 		authApi.POST("logout", api.LogoutEndpoint)
 	}
 
+	profileApi := router.Group("/profile")
+	{
+		profileApi.GET("", api.GetProfileEndpoint)
+		profileApi.GET("/sessions", api.GetMySessionsEndpoint)
+	}
+
 	userApi := router.Group("/users")
 	{
 		userApi.POST("", api.CreateUserEndpoint)

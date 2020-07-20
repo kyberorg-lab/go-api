@@ -37,6 +37,11 @@ func SaveToken(tokenDetails *details.TokenDetails) error {
 	return saveResult.Error
 }
 
+func VerifyAndExtractToken(token string) (jwt.AppClaims, error) {
+	claims, err := jwt.ParseToken(token)
+	return claims, err
+}
+
 func getTokenByUUID(tokenUuid string) (model.Token, error) {
 	var token model.Token
 	result := database.DBConn.Where("refresh_uuid = ?", tokenUuid).First(&token)
@@ -45,5 +50,4 @@ func getTokenByUUID(tokenUuid string) (model.Token, error) {
 	} else {
 		return token, nil
 	}
-
 }
