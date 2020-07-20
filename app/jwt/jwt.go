@@ -6,9 +6,9 @@ import (
 	"github.com/satori/go.uuid"
 	"go-rest/app"
 	"go-rest/app/database/model"
-	"go-rest/app/token"
 	"go-rest/app/token/details"
-	user2 "go-rest/app/user"
+	tokenService "go-rest/app/token/service"
+	userService "go-rest/app/user"
 	"os"
 	"time"
 )
@@ -46,7 +46,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	accessTokenClaims := AppClaims{
 		Authorized: true,
 		Uuid:       tokenDetails.AccessUuid,
-		Scopes:     user2.GetScopeNames(user),
+		Scopes:     userService.GetScopeNames(user),
 		StandardClaims: jwt.StandardClaims{
 			Subject:   user.Username,
 			ExpiresAt: tokenDetails.AtExpires,
@@ -63,7 +63,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 
 	//Creating Refresh Token
 	//go and check if user agent already have session
-	alreadyStoredToken, tokenSearchError := token.GetTokenForUserAgent(userAgent)
+	alreadyStoredToken, tokenSearchError := tokenService.GetTokenForUserAgent(userAgent)
 	userAgentHasValidToken := tokenSearchError == nil
 
 	if userAgentHasValidToken {
