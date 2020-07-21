@@ -38,6 +38,6 @@ ENV GIN_MODE=debug
 # Run delve and application
 CMD ["/dlv", "--continue", "--accept-multiclient", "--listen=:40000", "--headless=true", "--api-version=2", "exec", "/application"]
 
-HEALTHCHECK --start-period=60s --interval=5s --timeout=20s --retries=3 \
+HEALTHCHECK --start-period=20s --interval=5s --timeout=20s --retries=3 \
    CMD curl --silent --request GET http://127.0.0.1:8080/health \
                    | jq --exit-status '.status == "UP"' || exit 1
