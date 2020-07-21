@@ -39,8 +39,8 @@ func main() {
 	authApi := router.Group("/auth")
 	{
 		authApi.POST("login", api.LoginEndpoint)
-		authApi.POST("refresh-token", api.RefreshTokenEndpoint)
-		authApi.POST("logout", api.LogoutEndpoint)
+		authApi.POST("refresh_token", middleware.TokenAuthMiddleware(), api.RefreshTokenEndpoint)
+		authApi.POST("logout", middleware.TokenAuthMiddleware(), api.LogoutEndpoint)
 	}
 
 	profileApi := router.Group("/profile", middleware.TokenAuthMiddleware())
