@@ -8,14 +8,17 @@ pipeline {
                     def repo = 'kyberorg/go-api';
                     def tags = [];
                     String tag;
+                    String dockerfileDir
                     if (env.BRANCH_NAME.equals("master")) {
                         tag = "stable";
+                        dockerfileDir = "docker/prod"
                     } else {
                         tag = env.BRANCH_NAME;
+                        dockerfileDir = "docker"
                     }
                     tags << tag;
 
-                    dockerBuild(repo: repo, tags: tags);
+                    dockerBuild(repo: repo, tags: tags, dockerfileDir: dockerfileDir);
                     dockerLogin(creds: 'hub-docker');
                     dockerPush();
                     dockerLogout();
