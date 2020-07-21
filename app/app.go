@@ -31,23 +31,23 @@ const (
 
 //user-agent related
 const (
-	UserAgentUnknown = "Unknown"
-	IPUnknown        = "0.0.0.0"
-	IPUADelimiter    = "---"
+	UAUserAgentUnknown = "Unknown"
+	UAIPUnknown        = "0.0.0.0"
+	UAIPDelimiter      = "---"
 )
 
-//token timeouts
+//token lifetime
 const (
-	TimeoutAccessToken  = 15 * time.Minute
-	TimeoutRefreshToken = 24 * time.Hour
+	LifetimeAccessToken  = 15 * time.Minute
+	LifetimeRefreshToken = 24 * time.Hour
 )
 
 //errors
 const (
-	InvalidJson    = "Invalid json provided"
-	GeneralError   = "Something went wrong at out side"
-	AccessDenied   = "AccessDenied"
-	NotImplemented = "Not implemented yet"
+	ErrInvalidJson    = "Invalid json provided"
+	ErrGeneralError   = "Something went wrong at out side"
+	ErrAccessDenied   = "AccessDenied"
+	ErrNotImplemented = "Not implemented yet"
 )
 
 type MessageJson struct {

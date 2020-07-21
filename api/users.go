@@ -7,5 +7,5 @@ import (
 )
 
 func CreateUserEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.NotImplemented})
+	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.ErrNotImplemented})
 }

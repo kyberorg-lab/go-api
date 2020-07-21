@@ -20,8 +20,8 @@ const (
 )
 
 type LoginJson struct {
-	Username string `json:"username" binding: "required,min=3,max=100"`
-	Password string `json:"password" binding: "required,min=3,max=256"`
+	Username string `json:"username" binding:"required,min=3,max=100"`
+	Password string `json:"password" binding:"required,min=3,max=256"`
 }
 
 type Tokens struct {
@@ -33,7 +33,7 @@ func LoginEndpoint(context *gin.Context) {
 	var loginJson LoginJson
 
 	if err := context.ShouldBindJSON(&loginJson); err != nil {
-		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.InvalidJson})
+		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.ErrInvalidJson})
 		return
 	}
 
@@ -50,7 +50,7 @@ func LoginEndpoint(context *gin.Context) {
 			isPasswordValid = false
 		} else {
 			fmt.Println("Password hash compare error ", compareError)
-			context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
+			context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.ErrGeneralError})
 			return
 		}
 	}
@@ -82,17 +82,17 @@ func RefreshTokenEndpoint(context *gin.Context) {
 
 	refreshToken, searchError := tokenService.GetTokenByUUID(tokenClaims.Uuid)
 	if searchError != nil {
-		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
+		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.ErrGeneralError})
 	}
 	foundUser, userSearchError := user.FindUserByName(refreshToken.UserName)
 	if userSearchError != nil {
-		context.JSON(http.StatusForbidden, app.ErrJson{Err: app.AccessDenied})
+		context.JSON(http.StatusForbidden, app.ErrJson{Err: app.ErrAccessDenied})
 		return
 	}
 
 	newTokenPairDetails, tokenCreateError := jwt.CreateToken(foundUser, refreshToken.UserAgent)
 	if tokenCreateError != nil {
-		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.AccessDenied})
+		context.JSON(http.StatusUnprocessableEntity, app.ErrJson{Err: app.ErrAccessDenied})
 		return
 	}
 
@@ -108,7 +108,7 @@ func LogoutEndpoint(context *gin.Context) {
 	tokenClaims, _ := tokenService.GetToken(context)
 	delError := tokenService.DeleteToken(tokenClaims.Uuid)
 	if delError != nil {
-		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.GeneralError})
+		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.ErrGeneralError})
 		return
 	}
 	context.JSON(http.StatusOK, app.MessageJson{Message: SuccessfullyLoggedOut})

@@ -41,7 +41,7 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 		}
 
 		if refreshToken.UserName != accessTokenClaims.Subject {
-			context.JSON(http.StatusUnauthorized, app.ErrJson{Err: app.AccessDenied})
+			context.JSON(http.StatusUnauthorized, app.ErrJson{Err: app.ErrAccessDenied})
 			context.Abort()
 			return
 		}

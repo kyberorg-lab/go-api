@@ -23,5 +23,5 @@ func GetProfileEndpoint(context *gin.Context) {
 }
 
 func GetMySessionsEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.NotImplemented})
+	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.ErrNotImplemented})
 }

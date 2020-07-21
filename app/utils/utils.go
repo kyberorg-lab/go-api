@@ -8,7 +8,7 @@ import (
 )
 
 func GetUniqueUserAgent(context *gin.Context) string {
-	return getClientIP(context) + app.IPUADelimiter + getUserAgent(context)
+	return getClientIP(context) + app.UAIPDelimiter + getUserAgent(context)
 }
 
 func ExtractToken(context *gin.Context) string {
@@ -23,7 +23,7 @@ func ExtractToken(context *gin.Context) string {
 func getUserAgent(context *gin.Context) string {
 	userAgent := context.GetHeader("User-Agent")
 	if userAgent == "" {
-		userAgent = app.UserAgentUnknown
+		userAgent = app.UAUserAgentUnknown
 	}
 	return userAgent
 }
@@ -31,11 +31,11 @@ func getUserAgent(context *gin.Context) string {
 func getClientIP(context *gin.Context) string {
 	ip := context.ClientIP()
 	if ip == "" {
-		ip = app.IPUnknown
+		ip = app.UAIPUnknown
 	}
 	parsedIp := net.ParseIP(ip)
 	if parsedIp == nil {
-		return app.IPUnknown
+		return app.UAIPUnknown
 	}
 	ipv4 := parsedIp.To4()
 	if ipv4 == nil {

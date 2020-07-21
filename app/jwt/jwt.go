@@ -48,7 +48,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 		tokenDetails.RefreshToken = alreadyStoredToken.RefreshToken
 	} else {
 		//new token
-		tokenDetails.RefreshTokenExpires = time.Now().Add(app.TimeoutRefreshToken).Unix()
+		tokenDetails.RefreshTokenExpires = time.Now().Add(app.LifetimeRefreshToken).Unix()
 		tokenDetails.RefreshUuid = uuid.NewV4().String()
 
 		refreshTokenClaims := AppClaims{
@@ -67,7 +67,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 		}
 	}
 
-	tokenDetails.AccessTokenExpires = time.Now().Add(app.TimeoutAccessToken).Unix()
+	tokenDetails.AccessTokenExpires = time.Now().Add(app.LifetimeAccessToken).Unix()
 
 	tokenDetails.UserAgent = userAgent
 
