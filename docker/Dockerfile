@@ -36,4 +36,4 @@ EXPOSE 8080 40000
 ENV GIN_MODE=debug
 
 # Run delve and application
-CMD ["/dlv", "--listen=:40000", "--headless=true", "--api-version=2", "exec", "/application"]
+CMD ["/dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--continue", "exec", "/application"]
