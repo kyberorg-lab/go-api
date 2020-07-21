@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/kyberorg/go-api/app/database"
-	"github.com/kyberorg/go-api/app/database/model"
+	"github.com/kyberorg/go-api/database"
+	"github.com/kyberorg/go-api/database/model"
 	"time"
 )
 

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kyberorg/go-api/app"
-	"github.com/kyberorg/go-api/app/database"
-	"github.com/kyberorg/go-api/app/database/model"
-	"github.com/kyberorg/go-api/app/scope"
+	"github.com/kyberorg/go-api/database"
+	"github.com/kyberorg/go-api/database/model"
+	"github.com/kyberorg/go-api/database/sql"
 	"github.com/kyberorg/go-utils/osutils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -39,7 +39,7 @@ func CreateFirstUser() error {
 			return hasError
 		}
 
-		superAdminScope, err := scope.FindScopeByName(app.DefaultFirstUserScope)
+		superAdminScope, err := sql.ScopeStore.FindScopeByName(app.DefaultFirstUserScope)
 		if err != nil {
 			fmt.Println("There is no", app.DefaultFirstUserScope, "stored in Database")
 			return err

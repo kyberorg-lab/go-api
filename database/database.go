@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/kyberorg/go-api/app"
-	"github.com/kyberorg/go-api/app/database/model"
+	"github.com/kyberorg/go-api/database/model"
 	"log"
 	"os"
 )

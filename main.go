@@ -3,21 +3,24 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kyberorg/go-api/api"
-	"github.com/kyberorg/go-api/app/database"
-	"github.com/kyberorg/go-api/app/scope"
 	"github.com/kyberorg/go-api/app/user"
+	"github.com/kyberorg/go-api/database"
 	"github.com/kyberorg/go-api/middleware"
+	"github.com/kyberorg/go-api/service"
 	"log"
 )
 
 var (
 	router = gin.Default()
+
+	scopeService = service.NewScopeService()
 )
 
 func init() {
 	database.InitDatabase()
-	scope.CreateScopes()
+	scopeService.CreateScopes()
 
+	//TODO continue layout modifications from hereon...
 	err := user.CreateFirstUser()
 	if err != nil {
 		otherSuperAdminsExist, searchError := user.SuperAdminsInSystemExist()
