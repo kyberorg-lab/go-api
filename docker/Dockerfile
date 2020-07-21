@@ -8,15 +8,16 @@ RUN apk update && apk add alpine-sdk git && rm -rf /var/cache/apk/*
 
 WORKDIR /
 
-COPY go.mod .
-COPY go.sum .
+COPY go.mod go.sum ./
 RUN go mod download
+# Copy sources from current dir to Container
+COPY . .
 
 # The -gcflags "all=-N -l" flag helps us get a better debug experience
 RUN go build -gcflags "all=-N -l" -o application main.go
 
 # Compile Delve (Go debugger)
-RUN go get github.com/derekparker/delve/cmd/dlv
+RUN go get github.com/go-delve/delve/cmd/dlv
 
 # Final stage
 FROM alpine:3.12
