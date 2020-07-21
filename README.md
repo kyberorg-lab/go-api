@@ -14,7 +14,7 @@ Scope/Auth: JSON with a username and password
 * 401 - login details wrong + ErrorJson
 * 500 - server-side error + ErrorJson
 
-### POST /auth/refresh-token
+### POST /auth/refresh_token
 Scope/Auth: Refresh token
 
 * 201 - New Tokens issued + Tokens (access, refresh)

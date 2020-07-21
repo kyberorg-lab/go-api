@@ -1,4 +1,4 @@
-@Library('common-lib@1.4') _
+@Library('common-lib@1.5') _
 pipeline {
     agent any;
     stages {
@@ -8,14 +8,17 @@ pipeline {
                     def repo = 'kyberorg/go-api';
                     def tags = [];
                     String tag;
+                    String dockerfileDir
                     if (env.BRANCH_NAME.equals("master")) {
                         tag = "stable";
+                        dockerFile = "docker/prod/Dockerfile"
                     } else {
                         tag = env.BRANCH_NAME;
+                        dockerFile = "docker/Dockerfile"
                     }
                     tags << tag;
 
-                    dockerBuild(repo: repo, tags: tags);
+                    dockerBuild(repo: repo, tags: tags, dockerFile: dockerFile);
                     dockerLogin(creds: 'hub-docker');
                     dockerPush();
                     dockerLogout();
