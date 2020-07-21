@@ -1,4 +1,4 @@
-@Library('common-lib@1.4') _
+@Library('common-lib@1.5') _
 pipeline {
     agent any;
     stages {
@@ -11,14 +11,14 @@ pipeline {
                     String dockerfileDir
                     if (env.BRANCH_NAME.equals("master")) {
                         tag = "stable";
-                        dockerfileDir = "docker/prod"
+                        dockerFile = "docker/prod/Dockerfile"
                     } else {
                         tag = env.BRANCH_NAME;
-                        dockerfileDir = "docker"
+                        dockerFile = "docker/Dockerfile"
                     }
                     tags << tag;
 
-                    dockerBuild(repo: repo, tags: tags, dockerfileDir: dockerfileDir);
+                    dockerBuild(repo: repo, tags: tags, dockerFile: dockerFile);
                     dockerLogin(creds: 'hub-docker');
                     dockerPush();
                     dockerLogout();
