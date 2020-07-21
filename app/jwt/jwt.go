@@ -3,12 +3,12 @@ package jwt
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/app/database/model"
+	"github.com/kyberorg/go-api/app/token/details"
+	tokenService "github.com/kyberorg/go-api/app/token/service"
+	userService "github.com/kyberorg/go-api/app/user"
 	"github.com/satori/go.uuid"
-	"go-rest/app"
-	"go-rest/app/database/model"
-	"go-rest/app/token/details"
-	tokenService "go-rest/app/token/service"
-	userService "go-rest/app/user"
 	"os"
 	"time"
 )

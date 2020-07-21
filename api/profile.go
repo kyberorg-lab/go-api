@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-rest/app"
-	tokenService "go-rest/app/token"
+	"github.com/kyberorg/go-api/app"
+	tokenService "github.com/kyberorg/go-api/app/token"
 	"net/http"
 )
 

@@ -3,11 +3,11 @@ package user
 import (
 	"errors"
 	"fmt"
+	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/app/database"
+	"github.com/kyberorg/go-api/app/database/model"
+	"github.com/kyberorg/go-api/app/scope"
 	"github.com/kyberorg/go-utils/osutils"
-	"go-rest/app"
-	"go-rest/app/database"
-	"go-rest/app/database/model"
-	"go-rest/app/scope"
 	"golang.org/x/crypto/bcrypt"
 )
 

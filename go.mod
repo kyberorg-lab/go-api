@@ -1,4 +1,4 @@
-module go-rest
+module github.com/kyberorg/go-api
 
 go 1.14
 

@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-rest/api"
-	"go-rest/app/database"
-	"go-rest/app/scope"
-	"go-rest/app/user"
-	"go-rest/middleware"
+	"github.com/kyberorg/go-api/api"
+	"github.com/kyberorg/go-api/app/database"
+	"github.com/kyberorg/go-api/app/scope"
+	"github.com/kyberorg/go-api/app/user"
+	"github.com/kyberorg/go-api/middleware"
 	"log"
 )
 

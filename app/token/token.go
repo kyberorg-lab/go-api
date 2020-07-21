@@ -3,11 +3,11 @@ package token
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"go-rest/app/database"
-	"go-rest/app/database/model"
-	"go-rest/app/jwt"
-	"go-rest/app/token/details"
-	"go-rest/app/utils"
+	"github.com/kyberorg/go-api/app/database"
+	"github.com/kyberorg/go-api/app/database/model"
+	"github.com/kyberorg/go-api/app/jwt"
+	"github.com/kyberorg/go-api/app/token/details"
+	"github.com/kyberorg/go-api/app/utils"
 )
 
 func SaveToken(tokenDetails *details.TokenDetails) error {

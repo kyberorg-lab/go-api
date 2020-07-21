@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-rest/app"
+	"github.com/kyberorg/go-api/app"
 	"net"
 	"strings"
 )

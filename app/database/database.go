@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"go-rest/app"
-	"go-rest/app/database/model"
+	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/app/database/model"
 	"log"
 	"os"
 )

@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-rest/app"
-	"go-rest/app/jwt"
-	tokenService "go-rest/app/token"
-	"go-rest/app/utils"
+	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/app/jwt"
+	tokenService "github.com/kyberorg/go-api/app/token"
+	"github.com/kyberorg/go-api/app/utils"
 	"net/http"
 )
 

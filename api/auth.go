@@ -3,12 +3,12 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go-rest/app"
-	"go-rest/app/jwt"
-	"go-rest/app/token"
-	tokenService "go-rest/app/token"
-	"go-rest/app/user"
-	"go-rest/app/utils"
+	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/app/jwt"
+	"github.com/kyberorg/go-api/app/token"
+	tokenService "github.com/kyberorg/go-api/app/token"
+	"github.com/kyberorg/go-api/app/user"
+	"github.com/kyberorg/go-api/app/utils"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )

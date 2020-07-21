@@ -1,8 +1,8 @@
 package service
 
 import (
-	"go-rest/app/database"
-	"go-rest/app/database/model"
+	"github.com/kyberorg/go-api/app/database"
+	"github.com/kyberorg/go-api/app/database/model"
 	"time"
 )
 
