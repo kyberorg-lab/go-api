@@ -3,11 +3,14 @@ package service
 import (
 	"fmt"
 	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/database/model"
 	"github.com/kyberorg/go-api/database/sql"
 )
 
 var (
 	applicationScopes = []string{app.ScopeSuperAdmin, app.ScopeUser}
+
+	scopeStore = sql.NewScopeStore()
 )
 
 type ScopeService struct {
@@ -23,12 +26,17 @@ func (ss *ScopeService) CreateScopes() {
 	}
 }
 
+func (ss *ScopeService) FindScopeByName(scope string) (model.Scope, error) {
+	scopeStore.ScopeName = scope
+	return scopeStore.FindScopeByName()
+}
+
 func createScope(scopeName string) {
 	var result string
-
-	_, err := sql.ScopeStore.FindScopeByName(scopeName)
+	scopeStore.ScopeName = scopeName
+	_, err := scopeStore.FindScopeByName()
 	if err != nil {
-		createError := sql.ScopeStore.CreateNewScope(scopeName)
+		createError := scopeStore.CreateNewScope()
 		if createError != nil {
 			fmt.Println("Failed to create", scopeName, "Error: ", createError)
 			result = "failed (create failed)"

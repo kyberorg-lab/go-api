@@ -7,8 +7,8 @@ import (
 	"github.com/kyberorg/go-api/app/jwt"
 	"github.com/kyberorg/go-api/app/token"
 	tokenService "github.com/kyberorg/go-api/app/token"
-	"github.com/kyberorg/go-api/app/user"
 	"github.com/kyberorg/go-api/app/utils"
+	"github.com/kyberorg/go-api/service"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
@@ -17,6 +17,10 @@ const (
 	UserPassWrong         = "Please provide valid login details"
 	CannotCreateTokens    = "Failed to create tokens"
 	SuccessfullyLoggedOut = "Successfully logged out"
+)
+
+var (
+	userService = service.NewUserService()
 )
 
 type LoginJson struct {
@@ -37,14 +41,14 @@ func LoginEndpoint(context *gin.Context) {
 		return
 	}
 
-	foundUser, searchError := user.FindUserByName(loginJson.Username)
+	foundUser, searchError := userService.FindUserByName(loginJson.Username)
 	if searchError != nil {
 		fmt.Println("No such user ", loginJson.Username)
 		context.JSON(http.StatusUnauthorized, app.ErrJson{Err: UserPassWrong})
 		return
 	}
 
-	isPasswordValid, compareError := user.CheckPasswordForUser(foundUser, loginJson.Password)
+	isPasswordValid, compareError := userService.CheckPasswordForUser(foundUser, loginJson.Password)
 	if compareError != nil {
 		if compareError == bcrypt.ErrMismatchedHashAndPassword {
 			isPasswordValid = false
@@ -84,7 +88,7 @@ func RefreshTokenEndpoint(context *gin.Context) {
 	if searchError != nil {
 		context.JSON(http.StatusInternalServerError, app.ErrJson{Err: app.ErrGeneralError})
 	}
-	foundUser, userSearchError := user.FindUserByName(refreshToken.UserName)
+	foundUser, userSearchError := userService.FindUserByName(refreshToken.UserName)
 	if userSearchError != nil {
 		context.JSON(http.StatusForbidden, app.ErrJson{Err: app.ErrAccessDenied})
 		return

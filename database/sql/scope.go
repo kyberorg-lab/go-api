@@ -9,6 +9,10 @@ type ScopeStore struct {
 	ScopeName string
 }
 
+func NewScopeStore() ScopeStore {
+	return ScopeStore{}
+}
+
 func (ss *ScopeStore) CreateNewScope() error {
 	result := database.DBConn.Create(&model.Scope{
 		Name: ss.ScopeName,

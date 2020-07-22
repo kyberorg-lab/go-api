@@ -6,8 +6,8 @@ import (
 	"github.com/kyberorg/go-api/app"
 	"github.com/kyberorg/go-api/app/token/details"
 	tokenService "github.com/kyberorg/go-api/app/token/service"
-	userService "github.com/kyberorg/go-api/app/user"
 	"github.com/kyberorg/go-api/database/model"
+	"github.com/kyberorg/go-api/service"
 	"github.com/satori/go.uuid"
 	"os"
 	"time"
@@ -23,6 +23,10 @@ const (
 )
 
 var signingKey = []byte(os.Getenv(app.EnvJwtSecret))
+
+var (
+	userService = service.NewUserService()
+)
 
 type AppClaims struct {
 	Authorized bool     `json:"auth,omitempty"`
@@ -76,7 +80,7 @@ func CreateToken(user model.User, userAgent string) (*details.TokenDetails, erro
 	accessTokenClaims := AppClaims{
 		Authorized: true,
 		Uuid:       tokenDetails.RefreshUuid,
-		Scopes:     userService.GetScopeNames(user),
+		Scopes:     userService.GetUserScopesNames(user),
 		StandardClaims: jwt.StandardClaims{
 			Subject:   user.Username,
 			ExpiresAt: tokenDetails.AccessTokenExpires,

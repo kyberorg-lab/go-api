@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kyberorg/go-api/api"
-	"github.com/kyberorg/go-api/app/user"
 	"github.com/kyberorg/go-api/database"
 	"github.com/kyberorg/go-api/middleware"
 	"github.com/kyberorg/go-api/service"
@@ -14,6 +13,7 @@ var (
 	router = gin.Default()
 
 	scopeService = service.NewScopeService()
+	userService  = service.NewUserService()
 )
 
 func init() {
@@ -21,9 +21,9 @@ func init() {
 	scopeService.CreateScopes()
 
 	//TODO continue layout modifications from hereon...
-	err := user.CreateFirstUser()
+	err := userService.CreateFirstUser()
 	if err != nil {
-		otherSuperAdminsExist, searchError := user.SuperAdminsInSystemExist()
+		otherSuperAdminsExist, searchError := userService.SuperAdminsInSystemExist()
 		if !otherSuperAdminsExist || searchError != nil {
 			panic("Failed to create first user and there are no other admins exist")
 		}
