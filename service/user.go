@@ -3,9 +3,9 @@ package service
 import (
 	"errors"
 	"fmt"
-	"github.com/kyberorg/go-api/app"
 	"github.com/kyberorg/go-api/database/dao"
 	"github.com/kyberorg/go-api/database/model"
+	"github.com/kyberorg/go-api/global"
 	"github.com/kyberorg/go-utils/osutils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -38,8 +38,8 @@ func (us *UserService) CreateFirstUser() error {
 		return nil
 	}
 
-	firstUserName, _ := osutils.GetEnv(app.EnvFirstUserName, app.DefaultFirstUserName)
-	firstUserPassword, passwordFromEnv := osutils.GetEnv(app.EnvFirstUserPassword, app.DefaultFirstUserPassword)
+	firstUserName, _ := osutils.GetEnv(global.EnvFirstUserName, global.DefaultFirstUserName)
+	firstUserPassword, passwordFromEnv := osutils.GetEnv(global.EnvFirstUserPassword, global.DefaultFirstUserPassword)
 
 	firstUser, firstUserExists := us.FindUserByName(firstUserName)
 	if firstUserExists != nil {
@@ -50,9 +50,9 @@ func (us *UserService) CreateFirstUser() error {
 			return hasError
 		}
 
-		superAdminScope, err := scopeService.FindScopeByName(app.DefaultFirstUserScope)
+		superAdminScope, err := scopeService.FindScopeByName(global.DefaultFirstUserScope)
 		if err != nil {
-			fmt.Println("There is no", app.DefaultFirstUserScope, "stored in Database")
+			fmt.Println("There is no", global.DefaultFirstUserScope, "stored in Database")
 			return err
 		}
 
@@ -73,11 +73,11 @@ func (us *UserService) CreateFirstUser() error {
 			result += " Password "
 			if passwordFromEnv {
 				result += "(value of "
-				result += app.EnvFirstUserPassword
+				result += global.EnvFirstUserPassword
 				result += ")"
 			} else {
 				result += "'"
-				result += app.DefaultFirstUserPassword
+				result += global.DefaultFirstUserPassword
 				result += "'"
 			}
 		}
@@ -131,7 +131,7 @@ func (us *UserService) CheckPasswordForUser(user model.User, passwordCandidate s
 }
 
 func (us *UserService) SuperAdminsInSystemExist() (bool, error) {
-	superAdminScopeName := app.ScopeSuperAdmin
+	superAdminScopeName := global.ScopeSuperAdmin
 	superAdminScope, scopeNotFound := scopeService.FindScopeByName(superAdminScopeName)
 	if scopeNotFound != nil {
 		return false, scopeNotFound

@@ -2,13 +2,13 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/global"
 	"net"
 	"strings"
 )
 
 func GetUniqueUserAgent(context *gin.Context) string {
-	return getClientIP(context) + app.UAIPDelimiter + getUserAgent(context)
+	return getClientIP(context) + global.UAIPDelimiter + getUserAgent(context)
 }
 
 func ExtractToken(context *gin.Context) string {
@@ -23,7 +23,7 @@ func ExtractToken(context *gin.Context) string {
 func getUserAgent(context *gin.Context) string {
 	userAgent := context.GetHeader("User-Agent")
 	if userAgent == "" {
-		userAgent = app.UAUserAgentUnknown
+		userAgent = global.UAUserAgentUnknown
 	}
 	return userAgent
 }
@@ -31,11 +31,11 @@ func getUserAgent(context *gin.Context) string {
 func getClientIP(context *gin.Context) string {
 	ip := context.ClientIP()
 	if ip == "" {
-		ip = app.UAIPUnknown
+		ip = global.UAIPUnknown
 	}
 	parsedIp := net.ParseIP(ip)
 	if parsedIp == nil {
-		return app.UAIPUnknown
+		return global.UAIPUnknown
 	}
 	ipv4 := parsedIp.To4()
 	if ipv4 == nil {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/kyberorg/go-api/app"
 	"github.com/kyberorg/go-api/database/model"
+	"github.com/kyberorg/go-api/global"
 	"log"
 	"os"
 )
@@ -17,12 +17,12 @@ var (
 func InitDatabase() {
 	var err error
 
-	dbFile, dbLocExist := os.LookupEnv(app.EnvDatabaseFile)
+	dbFile, dbLocExist := os.LookupEnv(global.EnvDatabaseFile)
 	if !dbLocExist {
-		dbFile = app.DefaultDBFile
+		dbFile = global.DefaultDBFile
 	}
 
-	DBConn, err = gorm.Open(app.DBDialect, dbFile)
+	DBConn, err = gorm.Open(global.DBDialect, dbFile)
 	if err != nil {
 		panic("Failed to connect to database")
 	}

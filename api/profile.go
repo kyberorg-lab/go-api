@@ -2,8 +2,9 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kyberorg/go-api/app"
-	tokenService "github.com/kyberorg/go-api/app/token"
+	"github.com/kyberorg/go-api/global"
+	"github.com/kyberorg/go-api/global/json"
+	"github.com/kyberorg/go-api/global/utils"
 	"net/http"
 )
 
@@ -13,7 +14,8 @@ type Profile struct {
 }
 
 func GetProfileEndpoint(context *gin.Context) {
-	tokenClaims, _ := tokenService.GetToken(context)
+	token := utils.ExtractToken(context)
+	tokenClaims, _ := tokenService.ExtractClaimsFromToken(token)
 
 	profile := Profile{
 		Username:    tokenClaims.Subject,
@@ -23,5 +25,5 @@ func GetProfileEndpoint(context *gin.Context) {
 }
 
 func GetMySessionsEndpoint(context *gin.Context) {
-	context.JSON(http.StatusNotImplemented, app.ErrJson{Err: app.ErrNotImplemented})
+	context.JSON(http.StatusNotImplemented, json.ErrJson{Err: global.ErrNotImplemented})
 }

@@ -1,4 +1,4 @@
-package app
+package global
 
 import "time"
 
@@ -44,16 +44,13 @@ const (
 
 //errors
 const (
-	ErrInvalidJson    = "Invalid json provided"
-	ErrGeneralError   = "Something went wrong at out side"
-	ErrAccessDenied   = "AccessDenied"
-	ErrNotImplemented = "Not implemented yet"
+	ErrInvalidJson      = "invalid json provided"
+	ErrGeneralError     = "something went wrong at out side"
+	ErrAccessDenied     = "accessDenied"
+	ErrNotImplemented   = "not implemented yet"
+	ErrEmptyTokenString = "got empty string instead of token"
+	ErrEmptyToken       = "got empty token"
+	ErrMalformedToken   = "malformed token"
+	ErrTokenExpired     = "token is either expired or not active yet"
+	ErrMalformedClaims  = "got malformed claims"
 )
-
-type MessageJson struct {
-	Message string `json:"message"`
-}
-
-type ErrJson struct {
-	Err string `json:"err"`
-}

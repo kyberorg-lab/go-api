@@ -2,13 +2,13 @@ package service
 
 import (
 	"fmt"
-	"github.com/kyberorg/go-api/app"
 	"github.com/kyberorg/go-api/database/dao"
 	"github.com/kyberorg/go-api/database/model"
+	"github.com/kyberorg/go-api/global"
 )
 
 var (
-	applicationScopes = []string{app.ScopeSuperAdmin, app.ScopeUser}
+	applicationScopes = []string{global.ScopeSuperAdmin, global.ScopeUser}
 
 	scopeDao = dao.NewScopeDao()
 )
