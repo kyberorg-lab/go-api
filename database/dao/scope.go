@@ -1,4 +1,4 @@
-package sql
+package dao
 
 import (
 	"github.com/kyberorg/go-api/database"

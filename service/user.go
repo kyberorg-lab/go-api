@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kyberorg/go-api/app"
+	"github.com/kyberorg/go-api/database/dao"
 	"github.com/kyberorg/go-api/database/model"
-	"github.com/kyberorg/go-api/database/sql"
 	"github.com/kyberorg/go-utils/osutils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	userStore = sql.NewUserStore()
+	userStore = dao.NewUserStore()
 
 	scopeService = NewScopeService()
 )
