@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	userStore = dao.NewUserStore()
+	userDao = dao.NewUserDao()
 
 	scopeService = NewScopeService()
 )
@@ -28,7 +28,7 @@ func NewUserService() UserService {
 func (us *UserService) CreateFirstUser() error {
 	var result string
 
-	numOfUsers, countError := userStore.CountUsers()
+	numOfUsers, countError := userDao.CountUsers()
 	if countError != nil {
 		return countError
 	}
@@ -56,12 +56,12 @@ func (us *UserService) CreateFirstUser() error {
 			return err
 		}
 
-		userStore.UserName = firstUserPassword
-		userStore.HashedPassword = hashedPassword
-		userStore.Scopes = []model.Scope{superAdminScope}
-		userStore.Active = true
+		userDao.UserName = firstUserPassword
+		userDao.HashedPassword = hashedPassword
+		userDao.Scopes = []model.Scope{superAdminScope}
+		userDao.Active = true
 
-		createError := userStore.CreateUser()
+		createError := userDao.CreateUser()
 
 		if createError != nil {
 			fmt.Println("First user cannot be created", createError)
@@ -96,8 +96,8 @@ func (us *UserService) CreateFirstUser() error {
 				fmt.Println("Failed to hash password", hashError)
 				return hashError
 			}
-			userStore.HashedPassword = hashedPass
-			updateErr := userStore.UpdateUser()
+			userDao.HashedPassword = hashedPass
+			updateErr := userDao.UpdateUser()
 			if updateErr != nil {
 				fmt.Println("Password update error")
 				result = "already exists (failed to update password)"
@@ -114,8 +114,8 @@ func (us *UserService) CreateFirstUser() error {
 }
 
 func (us *UserService) FindUserByName(name string) (model.User, error) {
-	userStore.UserName = name
-	return userStore.FindUserByName()
+	userDao.UserName = name
+	return userDao.FindUserByName()
 }
 
 func (us *UserService) CheckPasswordForUser(user model.User, passwordCandidate string) (bool, error) {
@@ -137,7 +137,7 @@ func (us *UserService) SuperAdminsInSystemExist() (bool, error) {
 		return false, scopeNotFound
 	}
 
-	superAdmins, searchError := userStore.FindUsersByScope(superAdminScope, true)
+	superAdmins, searchError := userDao.FindUsersByScope(superAdminScope, true)
 	if searchError != nil {
 		return false, searchError
 	}

@@ -5,24 +5,24 @@ import (
 	"github.com/kyberorg/go-api/database/model"
 )
 
-type ScopeStore struct {
+type ScopeDao struct {
 	ScopeName string
 }
 
-func NewScopeStore() ScopeStore {
-	return ScopeStore{}
+func NewScopeDao() ScopeDao {
+	return ScopeDao{}
 }
 
-func (ss *ScopeStore) CreateNewScope() error {
+func (scopeDao *ScopeDao) CreateNewScope() error {
 	result := database.DBConn.Create(&model.Scope{
-		Name: ss.ScopeName,
+		Name: scopeDao.ScopeName,
 	})
 	return result.Error
 }
 
-func (ss *ScopeStore) FindScopeByName() (model.Scope, error) {
+func (scopeDao *ScopeDao) FindScopeByName() (model.Scope, error) {
 	var scope model.Scope
-	result := database.DBConn.First(&scope, "name = ?", ss.ScopeName)
+	result := database.DBConn.First(&scope, "name = ?", scopeDao.ScopeName)
 
 	if result.Error != nil {
 		return scope, result.Error

@@ -10,7 +10,7 @@ import (
 var (
 	applicationScopes = []string{app.ScopeSuperAdmin, app.ScopeUser}
 
-	scopeStore = dao.NewScopeStore()
+	scopeDao = dao.NewScopeDao()
 )
 
 type ScopeService struct {
@@ -27,16 +27,16 @@ func (ss *ScopeService) CreateScopes() {
 }
 
 func (ss *ScopeService) FindScopeByName(scope string) (model.Scope, error) {
-	scopeStore.ScopeName = scope
-	return scopeStore.FindScopeByName()
+	scopeDao.ScopeName = scope
+	return scopeDao.FindScopeByName()
 }
 
 func createScope(scopeName string) {
 	var result string
-	scopeStore.ScopeName = scopeName
-	_, err := scopeStore.FindScopeByName()
+	scopeDao.ScopeName = scopeName
+	_, err := scopeDao.FindScopeByName()
 	if err != nil {
-		createError := scopeStore.CreateNewScope()
+		createError := scopeDao.CreateNewScope()
 		if createError != nil {
 			fmt.Println("Failed to create", scopeName, "Error: ", createError)
 			result = "failed (create failed)"

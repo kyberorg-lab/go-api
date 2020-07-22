@@ -11,58 +11,58 @@ const (
 	PasswordNotValid = "password is not valid"
 )
 
-type UserStore struct {
+type UserDao struct {
 	UserName       string
 	HashedPassword string
 	Scopes         []model.Scope
 	Active         bool
 }
 
-func NewUserStore() UserStore {
-	return UserStore{}
+func NewUserDao() UserDao {
+	return UserDao{}
 }
 
-func (us *UserStore) CreateUser() error {
-	err := us.checkUserData()
+func (userDao *UserDao) CreateUser() error {
+	err := userDao.checkUserData()
 	if err != nil {
 		return err
 	}
-	user := us.userStoreToUserModel()
+	user := userDao.userStoreToUserModel()
 
 	result := database.DBConn.Create(&user)
 	result = database.DBConn.Save(&user)
 	return result.Error
 }
 
-func (us *UserStore) UpdateUser() error {
-	err := us.checkUserData()
+func (userDao *UserDao) UpdateUser() error {
+	err := userDao.checkUserData()
 	if err != nil {
 		return err
 	}
-	user := us.userStoreToUserModel()
+	user := userDao.userStoreToUserModel()
 
 	result := database.DBConn.Save(&user)
 	return result.Error
 }
 
-func (us *UserStore) CountUsers() (int, error) {
+func (userDao *UserDao) CountUsers() (int, error) {
 	numberOfUsers := 0
 	result := database.DBConn.Model(&model.User{}).Count(&numberOfUsers)
 	return numberOfUsers, result.Error
 }
 
-func (us *UserStore) FindUserByName() (model.User, error) {
+func (userDao *UserDao) FindUserByName() (model.User, error) {
 	var user model.User
 	var scopes model.Scope
 	database.DBConn.Model(&user).Related(&scopes, "Scopes")
-	result := database.DBConn.Preload("Scopes", &scopes).First(&user, "username = ?", us.UserName)
+	result := database.DBConn.Preload("Scopes", &scopes).First(&user, "username = ?", userDao.UserName)
 	if result.Error != nil {
 		return user, result.Error
 	}
 	return user, nil
 }
 
-func (us *UserStore) FindUsersByScope(scope model.Scope, onlyActiveUsers bool) ([]model.User, error) {
+func (userDao *UserDao) FindUsersByScope(scope model.Scope, onlyActiveUsers bool) ([]model.User, error) {
 	var allUsers []model.User
 	var foundUsers []model.User
 	var allScopes model.Scope
@@ -85,21 +85,21 @@ func (us *UserStore) FindUsersByScope(scope model.Scope, onlyActiveUsers bool) (
 	return foundUsers, nil
 }
 
-func (us *UserStore) checkUserData() error {
-	if us.UserName == "" || len(us.UserName) < 3 || len(us.UserName) > 255 {
+func (userDao *UserDao) checkUserData() error {
+	if userDao.UserName == "" || len(userDao.UserName) < 3 || len(userDao.UserName) > 255 {
 		return errors.New(UsernameNotValid)
 	}
-	if us.HashedPassword == "" || len(us.HashedPassword) > 72 {
+	if userDao.HashedPassword == "" || len(userDao.HashedPassword) > 72 {
 		return errors.New(PasswordNotValid)
 	}
 	return nil
 }
 
-func (us *UserStore) userStoreToUserModel() model.User {
+func (userDao *UserDao) userStoreToUserModel() model.User {
 	return model.User{
-		Username: us.UserName,
-		Password: us.HashedPassword,
-		Scopes:   us.Scopes,
-		Active:   us.Active,
+		Username: userDao.UserName,
+		Password: userDao.HashedPassword,
+		Scopes:   userDao.Scopes,
+		Active:   userDao.Active,
 	}
 }
